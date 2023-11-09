@@ -288,8 +288,10 @@ export const claimSiren = asyncHandler(async (req, res) => {
     const result = 30 - diffInSeconds
     if (result <= 0) {
       let user = await User.findOne({ walletAddress })
-      user.Siren = user.Siren + user.level * 100 + 100
-      user.eggs = user.eggs + (user.level - 1) * 10
+      // user.Siren = user.Siren + user.level * 100 + 100
+      user.Siren += 200
+      // user.eggs = user.eggs + (user.level - 1) * 10
+      user.eggs += 1
       await user.save()
 
       available.sirenLevelupState.state = false
@@ -532,6 +534,9 @@ export const setCoolDown = asyncHandler(async (req, res) => {
     let available = await Available.findOne({ user: walletAddress })
     available.sirenLevelupState.state = value
     available.save()
+    const user = await User.findOne({ walletAddress });
+    user.Siren = user.Siren - 2000
+    user.save()
 
     RESPONSE(res, 200, { data: 30 });
   }
@@ -1575,34 +1580,38 @@ export const stakediamond = asyncHandler(async (req, res) => {
         available.save()
         user.Siren = user.Siren-20
         user.save()
-        RESPONSE(res, 200, { data: true });
+        RESPONSE(res, 200, { data: user.Siren });
       }
       else {
     
-        RESPONSE(res, 200, { data: true, });
+        RESPONSE(res, 200, { data: user.Siren, });
       }
       break
     case 1:
       if (available.diamond2State.state === false) {
         available.diamond2State.state = true
         available.save()
+        user.Siren = user.Siren-20
+        user.save()
        
-        RESPONSE(res, 200, { data: true });
+        RESPONSE(res, 200, { data: user.Siren });
       }
       else {
     
-        RESPONSE(res, 200, { data: true });
+        RESPONSE(res, 200, { data: user.Siren });
       }
       break
     case 2:
       if (available.diamond3State.state === false) {
         available.diamond3State.state = true
         available.save()
-        RESPONSE(res, 200, { data: true });
+        user.Siren = user.Siren-20
+        user.save()
+        RESPONSE(res, 200, { data: user.Siren });
       }
       else {
     
-        RESPONSE(res, 200, { data: true });
+        RESPONSE(res, 200, { data: user.Siren });
       }
       break
   }
@@ -1763,6 +1772,7 @@ export const claimdiamond = asyncHandler(async (req, res) => {
             return
           }
         }
+        break
     }
     
   }
