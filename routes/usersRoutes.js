@@ -50,6 +50,7 @@ import {
     hunterLevelUp,
     getHistory,
     getHistoryByWallet,
+    getMiningStatus,
 } from '../controllers/userActions.js';
 import {  setRoomData } from "../controllers/roomActions.js";
 
@@ -85,6 +86,7 @@ router.post('/claim/diamond', claimdiamond);
 
 router.post('/buypremium', getPremium);
 router.post('/buymap', buyLand);
+router.post('/getMiningStatus', getMiningStatus);
 router.post('/buymining', buyMining);
 router.post('/requestmining', requestMining);
 router.post('/claimmining', claimMining);

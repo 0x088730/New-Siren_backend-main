@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema(
 
     miningModule: { type: Date, default: 0 },
     miningRequest: { type: Number, required: true, default: 0 },
+    miningStatus: {type: Boolean, default: false},
 
     goldMine: { type: Date, default: 0 },
     goldMineRequest: { type: Number, required: true, default: 0 },

@@ -2062,6 +2062,25 @@ export const getPremium = asyncHandler(async (req, res) => {
   }
 });
 
+
+export const getMiningStatus = asyncHandler(async (req, res) => {
+  let {walletAddress} = req.body;
+  const user = await User.findOne({ walletAddress });
+  if (!user) {
+    //writeLog(walletAddress, "Buy Mining", "User does not exist", "ERROR");
+    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Buy Mining", "User does not exist");
+    RESPONSE(res, 400, {}, "User does not exist");
+    return;
+  }
+  if(user.Siren > 500) {
+    user.Siren = user.Siren - 500;
+    user.miningStatus = true;
+    user.save();
+    RESPONSE(res, 200, {data: true}, "Successfully");
+  }
+})
+
+
 export const buyMining = asyncHandler(async (req, res) => {
   let { walletAddress, amount, txID, type } = req.body;
 
