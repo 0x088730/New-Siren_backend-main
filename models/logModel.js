@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const logSchema = new mongoose.Schema({
     walletAddress: {type: String, required: true},
     ipAddress: { type: String, default: "" },
-    Siren: { type: Number, default: 0 },
+    Drg: { type: Number, default: 0 },
     eggs: { type: Number, default: 0 },
     resource: { type: Number, default: 0 },
     details:{

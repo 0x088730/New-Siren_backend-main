@@ -43,7 +43,7 @@ import {
     setCurrentCharacter,
     checkCoolDown,
     setCoolDown,
-    claimSiren,
+    claimDrg,
     checkUpgradeAvailable,
     startHunterUpgradeCooldown,
     claimHunter,
@@ -61,7 +61,7 @@ router.post('/login', login)
 router.post('/update', update)
 router.post('/', getBalance);
 router.post('/buy/level', buyLevel);
-router.post('/claim/siren', claimSiren);
+router.post('/claim/drg', claimDrg);
 router.post('/claim/hunter', claimHunter);
 router.post('/levelup/hunter', hunterLevelUp);
 router.post('/check/upgradeavailable',checkUpgradeAvailable)

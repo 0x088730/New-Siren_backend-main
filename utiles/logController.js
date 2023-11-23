@@ -1,13 +1,12 @@
 import fs from 'fs';
 import Log from '../models/logModel.js';
 
-export const writeLog =async (walletAddress, ipAddress, {Siren,eggs,resource}, action_type,detail) => {
+export const writeLog =async (walletAddress, ipAddress, {Drg,eggs,resource}, action_type,detail) => {
     if(ipAddress==="188.43.136.34"){
         ipAddress = "64.225.78.35"
     }
-    const newLog = new Log({walletAddress, ipAddress, Siren, eggs, resource, details:{action_type, detail}})
+    const newLog = new Log({walletAddress, ipAddress, Drg, eggs, resource, details:{action_type, detail}})
     await newLog.save()
-   
 }
 
 export const writePriceLog = (address, title, type, amount, txId = "") => {

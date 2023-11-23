@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
   {
     walletAddress: { type: String, required: true },
-    Siren: { type: Number, default: 90000 },
+    Drg: { type: Number, default: 90000 },
 
     eggsRequest: { type: Number, default: 0 },
     resourceRequest: { type: Number, default: 0 },
@@ -93,7 +93,7 @@ const userSchema = new mongoose.Schema(
     currentCharacterName: {type: String, default: "siren-1"},
     hunterLevel: {type: Number,default:0},
     claimBox:{ 
-      siren:{type: Number,default:-2},
+      drg:{type: Number,default:-2},
       egg:{type: Number,default:-2},
       claim:{type: Boolean,default:false},
       userCount:{type: Number, default:0}

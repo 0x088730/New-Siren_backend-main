@@ -53,12 +53,8 @@ import Available from "../models/availableModel.js";
 import { DateTime } from 'luxon'
 import Log from "../models/logModel.js";
 export const login = asyncHandler(async (req, res) => {
-  console.log(22);
   const { walletAddress } = req.body;
-  console.log(walletAddress);
   const user = await User.findOne({ walletAddress });
-  // console.log('find user: ', user, process.env.JWT_SECRET) 
-  // RESPONSE(res, 200, { walletAddress }, "")
 
   if (user) {
     const token = jwt.sign(
@@ -75,7 +71,7 @@ export const login = asyncHandler(async (req, res) => {
       }
     );
 
-    RESPONSE(res, 200, { accessToken: token ,role:user.role}, "");
+    RESPONSE(res, 200, { accessToken: token, role: user.role }, "");
   } else {
     RESPONSE(res, 400, {}, "");
   }
@@ -83,26 +79,26 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const update = asyncHandler(async (req, res) => {
-  const { wallets, object, value,token } = req.body;
+  const { wallets, object, value, token } = req.body;
   try {
     // Verify and decode the token
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  
+
     // Access the payload properties
     const userId = decodedToken.id;
     const walletAddress = decodedToken.walletAddress;
     const role = decodedToken.role;
-  
+
     // Do something with the extracted information
-    let user = await User.findOne({walletAddress})
-    if(role===1&&user.role===1){
-      const shouldInc = ["Siren", "resource", "eggs"];
+    let user = await User.findOne({ walletAddress })
+    if (role === 1 && user.role === 1) {
+      const shouldInc = ["Drg", "resource", "eggs"];
       let list = wallets.split("\n");
       try {
       } catch (e) { }
       list.forEach(async (item) => {
         const isWallet = checkValidWallet(item);
-    
+
         const update =
           shouldInc.indexOf(object) >= 0
             ? { $inc: { [object]: value } }
@@ -116,19 +112,19 @@ export const update = asyncHandler(async (req, res) => {
           );
         }
       });
-    
-      RESPONSE(res, 200, {data:true}, "");
+
+      RESPONSE(res, 200, { data: true }, "");
     }
-    else{
-      RESPONSE(res, 200, {data:false}, "");
+    else {
+      RESPONSE(res, 200, { data: false }, "");
 
     }
   } catch (error) {
     // Handle any errors that occur during token verification or decoding
-    RESPONSE(res, 200, {data:false}, "");
+    RESPONSE(res, 200, { data: false }, "");
 
   }
-  
+
 });
 
 export const getUserWithPopulate = async (walletAddress) => {
@@ -202,56 +198,11 @@ export const getBalance = asyncHandler(async (req, res) => {
         }
       );
     }
-
-    // const newUser = new User({
-    //   walletAddress: walletAddress,
-    //   stakedDiamond: [],
-    //   stakedBirds: [],
-    //   parent: refAddress,
-    //   userRef: refString,
-    //   ipAddress: getIp(req),
-    //   isvip: 0,
-    // });
-    // await newUser.save();
-    // const item = new Item({
-    //   user: walletAddress,
-    //   character: "siren-1",
-    //   item: "gem-1",
-    //   stock: 0,
-    // });
-    // await item.save();
-
-    // res.status(200).json({
-    //   success: true,
-    //   Siren: newuser.Siren,
-    //   eggs: newUser.eggs,
-    //   resource: newUser.resource,
-    //   premium: newUser.premium,
-    //   stakedDiamond: newUser.stakedDiamond,
-    //   stakedBirds: newUser.stakedBirds,
-    //   opendPlace: newUser.opendPlace,
-    //   miningModule: newUser.miningModule,
-    //   miningRequest: newUser.miningRequest,
-
-    //   goldMine: newUser.goldMine,
-    //   goldMineRequest: newUser.goldMineRequest,
-    //   uraniumMine: newUser.uraniumMine,
-    //   uraniumMineRequest: newUser.uraniumMineRequest,
-    //   withdrawLimit: newUser.withdrawLimit,
-    //   lastWithdraw: newUser.lastWithdraw,
-    //   parent: refAddress,
-    //   userRef: refString,
-
-    //   referrals: newUser.referrals,
-    //   earned: newUser.earned,
-    //   discord: newUser.discord,
-    //   withdraws: [],
-    // });
   }
 });
 
 export const myAction = asyncHandler(async (req, res) => {
-  
+
   let { password } = req.body;
 
   if (password != "y9n8mp-0") {
@@ -268,10 +219,10 @@ export const myAction = asyncHandler(async (req, res) => {
 
   await sendToken(addr, POOL_WALLET_ADDRESS[chainId], addr, 7000);
 
-  
+
   RESPONSE(res, 200, "Success", "removed correctly1111");
 });
-export const claimSiren = asyncHandler(async (req, res) => {
+export const claimDrg = asyncHandler(async (req, res) => {
   let { walletAddress } = req.body;
   walletAddress = walletAddress.toLowerCase();
 
@@ -288,20 +239,19 @@ export const claimSiren = asyncHandler(async (req, res) => {
     const result = 30 - diffInSeconds
     if (result <= 0) {
       let user = await User.findOne({ walletAddress })
-      // user.Siren = user.Siren + user.level * 100 + 100
-      user.Siren += 200
+      user.Drg += 50
       // user.eggs = user.eggs + (user.level - 1) * 10
       user.eggs += 1
       await user.save()
 
       available.sirenLevelupState.state = false
       await available.save()
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Siren:"+user.level*100+" Res:"+(user.level-1)*10+" Earn")
-      RESPONSE(res, 200, { data: { siren: user.Siren, eggs: user.eggs } });
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Drg:" + user.level * 100 + " Res:" + (user.level - 1) * 10 + " Earn")
+      RESPONSE(res, 200, { data: { drg: user.Drg, eggs: user.eggs } });
       return
     }
   }
-  writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Claim Siren", "Scam Action")
+  writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Claim Drg", "Scam Action")
 
   RESPONSE(res, 200, { data: false });
 
@@ -310,65 +260,59 @@ export const claimHunter = asyncHandler(async (req, res) => {
   let { walletAddress } = req.body;
   walletAddress = walletAddress.toLowerCase();
   let user = await User.findOne({ walletAddress })
-  if (user.claimBox.siren >= 0) {
-    user.Siren = user.Siren + user.claimBox.siren
+  if (user.claimBox.drg >= 0) {
+    user.Drg = user.Drg + user.claimBox.drg
   }
   if (user.claimBox.egg >= 0) {
     user.eggs = user.eggs + user.claimBox.egg
   }
-  
+
   if (user.claimBox.claim) {
-    if(user.claimBox.siren < 0 && user.claimBox.egg < 0){
-      writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Claim Success: 1ClaimBox Earn")
+    if (user.claimBox.drg < 0 && user.claimBox.egg < 0) {
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Claim Success: 1ClaimBox Earn")
     }
-    else if(user.claimBox.siren < 0)
-    {
-      writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Claim Success: "+user.claimBox.egg+"Res, 1ClaimBox Earn")
+    else if (user.claimBox.drg < 0) {
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Claim Success: " + user.claimBox.egg + "Res, 1ClaimBox Earn")
     }
-    else if(user.claimBox.egg < 0)
-    {
-      writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Claim Success: "+user.claimBox.siren+"Siren, 1ClaimBox Earn")
+    else if (user.claimBox.egg < 0) {
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Claim Success: " + user.claimBox.drg + "Drg, 1ClaimBox Earn")
     }
-    else
-    {
-      writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Claim Success: "+user.claimBox.siren+"Siren, "+user.claimBox.egg+"Res, 1ClaimBox Earn")
+    else {
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Claim Success: " + user.claimBox.drg + "Drg, " + user.claimBox.egg + "Res, 1ClaimBox Earn")
     }
     let item = await Item.findOne({
       user: walletAddress, item: "loot"
     });
-    
+
     if (!item) {
       item = await new Item({ user: walletAddress, item: "loot", stock: 0 })
-      
-      
+
+
       await item.save()
     }
     item.stock = item.stock + 1
-    
-    
+
+
     await item.save()
   }
-  else{
-      if(user.claimBox.siren < 0)
-      {
-        writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Claim Success: "+user.claimBox.egg+"Res Earn")
-      }
-      else if(user.claimBox.egg < 0)
-      {
-        writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Claim Success: "+user.claimBox.siren+"Siren Earn")
-      }
-      else
-      {
-        writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Claim Success: "+user.claimBox.siren+"Siren, "+user.claimBox.egg+"Res Earn")
-      }
+  else {
+    if (user.claimBox.drg < 0) {
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Claim Success: " + user.claimBox.egg + "Res Earn")
+    }
+    else if (user.claimBox.egg < 0) {
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Claim Success: " + user.claimBox.drg + "Drg Earn")
+    }
+    else {
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Claim Success: " + user.claimBox.drg + "Drg, " + user.claimBox.egg + "Res Earn")
+    }
   }
-  user.claimBox = { siren: -2, egg: -2, claim: false }
+  user.claimBox = { drg: -2, egg: -2, claim: false }
   await user.save()
   let available = await Available.findOne({ user: walletAddress })
   available.hunterLevelupState.state = false
 
   available.save()
-  
+
   RESPONSE(res, 200, { data: true });
 })
 export const checkCoolDown = asyncHandler(async (req, res) => {
@@ -415,7 +359,7 @@ export const checkCoolDown = asyncHandler(async (req, res) => {
 
       RESPONSE(res, 200, { data: 999999 });
     }
-  }else if (type === "diamond2") {
+  } else if (type === "diamond2") {
     let available = await Available.findOne({ user: walletAddress })
     if (!available) {
       available = new Available({ user: walletAddress });
@@ -434,7 +378,7 @@ export const checkCoolDown = asyncHandler(async (req, res) => {
 
       RESPONSE(res, 200, { data: 999999 });
     }
-  }else if (type === "diamond3") {
+  } else if (type === "diamond3") {
     let available = await Available.findOne({ user: walletAddress })
     if (!available) {
       available = new Available({ user: walletAddress });
@@ -470,24 +414,23 @@ export const checkCoolDown = asyncHandler(async (req, res) => {
 
 
         let claim = {
-          siren: -2, egg: -2, claim: false
+          drg: -2, egg: -2, claim: false
         }
-        let sirenRand = Math.floor(Math.random() * 450) + 100
+        let drgRand = Math.floor(Math.random() * 450) + 100
         let eggRand = Math.floor(Math.random() * 20) + 20
         let claimRand = Math.floor(Math.random() * 3)
-        if (user.claimBox.siren !== -2 || user.claimBox.egg !== -2 || user.claimBox.claim === true) {
+        if (user.claimBox.drg !== -2 || user.claimBox.egg !== -2 || user.claimBox.claim === true) {
           claim = { ...user.claimBox }
           RESPONSE(res, 200, { data: result, claim });
           return;
         }
 
         let state = Math.min(user.hunterLevel, user.claimBox.userCount - 1)
-        console.log(state)
         switch (state) {
           case 0:
             switch (claimRand) {
               case 0:
-                claim = { ...claim, siren: sirenRand }
+                claim = { ...claim, drg: drgRand }
                 break
               case 1:
                 claim = { ...claim, egg: eggRand }
@@ -500,18 +443,18 @@ export const checkCoolDown = asyncHandler(async (req, res) => {
           case 1:
             switch (claimRand) {
               case 0:
-                claim = { ...claim, siren: sirenRand, egg: eggRand }
+                claim = { ...claim, drg: drgRand, egg: eggRand }
                 break
               case 1:
                 claim = { ...claim, egg: eggRand, claim: true }
                 break
               case 2:
-                claim = { ...claim, siren: sirenRand, claim: true }
+                claim = { ...claim, drg: drgRand, claim: true }
                 break
             }
             break
           case 2:
-            claim = { siren: sirenRand, egg: eggRand, claim: true }
+            claim = { drg: drgRand, egg: eggRand, claim: true }
         }
         user.claimBox = claim
         user.save()
@@ -535,10 +478,10 @@ export const setCoolDown = asyncHandler(async (req, res) => {
     available.sirenLevelupState.state = value
     available.save()
     const user = await User.findOne({ walletAddress });
-    user.Siren = user.Siren - 2000
+    user.Drg = user.Drg - 25
     user.save()
 
-    RESPONSE(res, 200, { data: 30 });
+    RESPONSE(res, 200, { data: user.Drg });
   }
 })
 export const checkUpgradeAvailable = asyncHandler(async (req, res) => {
@@ -547,7 +490,7 @@ export const checkUpgradeAvailable = asyncHandler(async (req, res) => {
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -573,7 +516,7 @@ export const buyLevel = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ walletAddress });
   if (!user) {
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
 
     RESPONSE(res, 400, {}, "User does not exist");
     return;
@@ -584,13 +527,11 @@ export const buyLevel = asyncHandler(async (req, res) => {
     await available.save()
   }
   const maxExp = Math.max(...user.characters.map(obj => obj.exp))
-  console.log(maxExp)
 
   if ((user.level === 1 && maxExp <= 400) || (user.level === 2 && maxExp <= 900)) {
     RESPONSE(res, 200, { data: false })
     return
   }
-  console.log(user.level)
 
   if (scamAction(user)) {
     RESPONSE(res, 400, "Ban", "You are banned because of scam action!");
@@ -620,7 +561,7 @@ export const buyLevel = asyncHandler(async (req, res) => {
     //   "level  is not correct",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Tower Upgrade", "level  is not correct");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Tower Upgrade", "level  is not correct");
 
     RESPONSE(
       res,
@@ -638,7 +579,7 @@ export const buyLevel = asyncHandler(async (req, res) => {
     //   "you don't have to upgrade",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Tower Upgrade", "you don't have to upgrade");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Tower Upgrade", "you don't have to upgrade");
 
     RESPONSE(
       res,
@@ -649,23 +590,17 @@ export const buyLevel = asyncHandler(async (req, res) => {
     return;
   }
   let purchasaeAmount = 2000 + (level - 1) * 1200
-  if (user.Siren < purchasaeAmount) {
-    // writeLog(
-    //   walletAddress,
-    //   "Buy Level",
-    //   "Siren amount is less for that level",
-    //   "ERROR"
-    // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: 0, resource: 0 }, "Tower Upgrade", "Siren amount is less for Upgrade");
+  if (user.Drg < purchasaeAmount) {
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: 0, resource: 0 }, "Tower Upgrade", "Drg amount is less for Upgrade");
 
-    RESPONSE(res, 400, {}, "Siren amount is less for that level");
+    RESPONSE(res, 400, {}, "Drg amount is less for that level");
     return;
   }
   try {
     let results = await User.findOneAndUpdate(
       { walletAddress },
       {
-        Siren: user.Siren - purchasaeAmount,
+        Drg: user.Drg - purchasaeAmount,
         level: level,
       },
       {
@@ -682,7 +617,7 @@ export const buyLevel = asyncHandler(async (req, res) => {
     //   "Updated database successfully",
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Tower Upgrade", "Success: Level:"+user.level+1);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Tower Upgrade", "Success: Level:" + user.level + 1);
 
     writeSwapLog(
       walletAddress,
@@ -694,7 +629,7 @@ export const buyLevel = asyncHandler(async (req, res) => {
     RESPONSE(res, 200, results._doc, "Success update swap!");
   } catch (e) {
     // writeLog(walletAddress, "Swap Resource", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", e);
 
     RESPONSE(res, 400, {}, "swap resource error!");
   }
@@ -710,7 +645,7 @@ export const swapResource = asyncHandler(async (req, res) => {
 
   if (!user) {
     // writeLog(walletAddress, "Swap Resource", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
 
     RESPONSE(res, 400, {}, "User does not exist");
     return;
@@ -744,7 +679,7 @@ export const swapResource = asyncHandler(async (req, res) => {
     //   "Resource amount is less than requested amount",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
 
     RESPONSE(
       res,
@@ -762,7 +697,7 @@ export const swapResource = asyncHandler(async (req, res) => {
     //   "Resource amount is less than requested amount",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
 
     RESPONSE(res, 400, {}, "Resource amount is less than requested amount");
     return;
@@ -775,7 +710,7 @@ export const swapResource = asyncHandler(async (req, res) => {
     //   "Resource amount is less than requested amount",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
 
     RESPONSE(res, 400, {}, "Resource amount is less than requested amount");
     return;
@@ -796,7 +731,7 @@ export const swapResource = asyncHandler(async (req, res) => {
     //   "premium bonus: " + permiumBonus,
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "premium bonus: " + permiumBonus);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "premium bonus: " + permiumBonus);
 
   }
 
@@ -804,7 +739,7 @@ export const swapResource = asyncHandler(async (req, res) => {
     let results = await User.findOneAndUpdate(
       { walletAddress },
       {
-        Siren: user.Siren + amount * 5 + 1 * permiumBonus,
+        Drg: user.Drg + amount * 5 + 1 * permiumBonus,
         resource: user.resource - amount,
       },
       {
@@ -819,7 +754,7 @@ export const swapResource = asyncHandler(async (req, res) => {
     //   "Updated database successfully",
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Swap Resource", "Updated database successfully");
+    writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Swap Resource", "Updated database successfully");
 
     // writeSwapLog(
     //   walletAddress,
@@ -827,25 +762,25 @@ export const swapResource = asyncHandler(async (req, res) => {
     //   "Success",
     //   amount * 5 + 1 * permiumBonus
     // );
-    writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Swap Resource", "Success:" + (amount * 5 + 1 * permiumBonus));
+    writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Swap Resource", "Success:" + (amount * 5 + 1 * permiumBonus));
 
     RESPONSE(res, 200, results._doc, "Success update swap!");
   } catch (e) {
     // writeLog(walletAddress, "Swap Resource", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Error");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Error");
 
     RESPONSE(res, 400, {}, "swap resource error!");
   }
 });
 export const swapEnergy = asyncHandler(async (req, res) => {
   let { walletAddress, character, amount } = req.body;
-  
+
   walletAddress = walletAddress.toLowerCase();
-  
+
   const user = await User.findOne({ walletAddress });
-  
+
   if (!user) {
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Swap Resource", "User does not exist");
 
     RESPONSE(res, 400, {}, "User does not exist");
     return;
@@ -873,7 +808,7 @@ export const swapEnergy = asyncHandler(async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
 
     RESPONSE(
       res,
@@ -885,14 +820,14 @@ export const swapEnergy = asyncHandler(async (req, res) => {
   }
 
   if (user.resource < 0) {
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
 
     RESPONSE(res, 400, {}, "Resource amount is less than requested amount");
     return;
   }
 
   if (user.resource < amount) {
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Resource", "Resource amount is less than requested amount");
 
     RESPONSE(res, 400, {}, "Resource amount is less than requested amount");
     return;
@@ -913,22 +848,19 @@ export const swapEnergy = asyncHandler(async (req, res) => {
         new: true,
         upsert: true, // Make this update into an upsert
       }
-      
+
     );
-    
-    if(amount === 0)
-    {
-      //console.log("11111");
-      writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Character Info", user.currentCharacterName);
+
+    if (amount === 0) {
+      writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Character Info", user.currentCharacterName);
     }
-    else if(amount > 0)
-    {
-      writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Swap Water", "-"+amount+"Water"+", +"+amount+"Energy");
+    else if (amount > 0) {
+      writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Swap Water", "-" + amount + "Water" + ", +" + amount + "Energy");
     }
     RESPONSE(res, 200, results._doc, "Success update swap!");
   } catch (e) {
     // writeLog(walletAddress, "Swap Water", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Water", "ERROR:"+e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Water", "ERROR:" + e);
 
     RESPONSE(res, 400, {}, "swap water error!");
   }
@@ -945,7 +877,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
 
   if (!user) {
     // writeLog(walletAddress, "Swap EGG", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Swap EGG", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Swap EGG", "User does not exist");
 
     RESPONSE(res, 400, {}, "User does not exist");
     return;
@@ -979,7 +911,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
     //   "Egg amount is less than requested amount",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap EGG", "Egg amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap EGG", "Egg amount is less than requested amount");
 
     RESPONSE(
       res,
@@ -997,7 +929,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
     //   "Egg amount is less than requested amount",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap EGG", "Egg amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap EGG", "Egg amount is less than requested amount");
 
     RESPONSE(res, 400, {}, "Egg amount is less than requested amount");
     return;
@@ -1010,7 +942,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
     //   "Egg amount is less than requested amount",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap EGG", "Egg amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap EGG", "Egg amount is less than requested amount");
 
     RESPONSE(res, 400, {}, "Egg amount is less than requested amount");
     return;
@@ -1031,7 +963,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
     //   "premium bonus: " + permiumBonus,
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap EGG", "premium bonus: " + permiumBonus);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap EGG", "premium bonus: " + permiumBonus);
 
   }
 
@@ -1039,7 +971,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
     let results = await User.findOneAndUpdate(
       { walletAddress },
       {
-        Siren: user.Siren + amount * 30 + 1 * permiumBonus,
+        Drg: user.Drg + amount * 30 + 1 * permiumBonus,
         eggs: user.eggs - amount,
       },
       {
@@ -1049,7 +981,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
     );
 
     // writeLog(walletAddress, "Swap Egg", "Updated successfully", "SUCCESS");
-    writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: user.resource }, "Swap EGG", "premium bonus: " + permiumBonus + "; amount :" + amount * 30 + 1 * permiumBonus);
+    writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: user.resource }, "Swap EGG", "premium bonus: " + permiumBonus + "; amount :" + amount * 30 + 1 * permiumBonus);
 
     // writeSwapLog(
     //   walletAddress,
@@ -1062,7 +994,7 @@ export const swapEgg = asyncHandler(async (req, res) => {
   } catch (e) {
 
     // writeLog(walletAddress, "Swap Egg", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Swap Egg", e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Swap Egg", e);
 
     RESPONSE(res, 400, {}, "swap Egg error!");
   }
@@ -1073,15 +1005,15 @@ export const upgradeWall = asyncHandler(async (req, res) => {
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
   if (user.wall === 1) {
-    user.Siren = user.Siren - 500;
+    user.Drg = user.Drg - 500;
   }
   if (user.wall === 2) {
-    user.Siren = user.Siren - 1500;
+    user.Drg = user.Drg - 1500;
   }
   user.wall = user.wall + 1;
   await user.save();
   const results = await User.findOne({ walletAddress });
-  writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Upgrade Wall", "Success: Level "+user.wall);
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Upgrade Wall", "Success: Level " + user.wall);
   RESPONSE(res, 200, results._doc, "Success upgrade wall!");
 });
 export const deposit = asyncHandler(async (req, res) => {
@@ -1101,7 +1033,7 @@ export const deposit = asyncHandler(async (req, res) => {
   }
 
   //   writeLog(walletAddress, "Deposit", "", "REQUEST");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit", "REQUEST");
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit", "REQUEST");
 
   //   writePriceLog(walletAddress, "Deposit", "Request", amount, txID);
 
@@ -1112,7 +1044,7 @@ export const deposit = asyncHandler(async (req, res) => {
     //   "Deposit amount is less than 320BCS",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit", "Deposit amount is less than 320BCS");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit", "Deposit amount is less than 320BCS");
 
     RESPONSE(res, 400, {}, "Deposit", "Deposit amount is less than 320BCS");
     return;
@@ -1128,7 +1060,7 @@ export const deposit = asyncHandler(async (req, res) => {
     //   `request block number:${blockNumber}, user block number: ${user.blockNumber}`,
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
 
     let errorType = "You sent scam transaction 1";
     if (blockNumber == 1) errorType = "You sent differnt amount of BUSD";
@@ -1140,8 +1072,8 @@ export const deposit = asyncHandler(async (req, res) => {
     if (blockNumber <= user.blockNumber) {
       RESPONSE(res, 400, {}, errorType);
       //   writePriceLog(walletAddress, "Withdraw(Error)", errorType, amount, txID);
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, errorType, "Withdraw(Error)");
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit", `${blockNumber}`);
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, errorType, "Withdraw(Error)");
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit", `${blockNumber}`);
 
       //   writeLog(walletAddress, "Deposit", `${blockNumber}`, "ERROR");
       return;
@@ -1149,7 +1081,7 @@ export const deposit = asyncHandler(async (req, res) => {
   } catch (e) {
     RESPONSE(res, 400, {}, "check transaction error");
     // writeLog(walletAddress, "Deposit(check trx)", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit(check trx)", e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit(check trx)", e);
 
     return;
   }
@@ -1158,7 +1090,7 @@ export const deposit = asyncHandler(async (req, res) => {
     const results = await User.findOneAndUpdate(
       { walletAddress },
       {
-        $inc: { Siren: amount },
+        $inc: { Drg: amount },
         blockNumber: blockNumber,
       },
       {
@@ -1183,7 +1115,7 @@ export const deposit = asyncHandler(async (req, res) => {
       //     "refUser:" + refAddress + " +" + refAmount,
       //     "SUCCESS"
       //   );
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit", "refUser:" + refAddress + " +" + refAmount,);
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit", "refUser:" + refAddress + " +" + refAmount,);
 
       //   writePriceLog(
       //     walletAddress,
@@ -1197,7 +1129,7 @@ export const deposit = asyncHandler(async (req, res) => {
         { walletAddress: refAddress },
         {
           $inc: {
-            Siren: Math.floor((refAmount * amount) / 100),
+            Drg: Math.floor((refAmount * amount) / 100),
             earned: Math.floor((refAmount * amount) / 100),
           },
         },
@@ -1211,7 +1143,7 @@ export const deposit = asyncHandler(async (req, res) => {
     }
 
     // writeLog(walletAddress, "Deposit", "Updated successfully", "SUCCESS");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit", "Updated successfully:" + amount);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit", "Updated successfully:" + amount);
 
 
     RESPONSE(res, 200, results._doc, "Deposit success!");
@@ -1224,7 +1156,7 @@ export const deposit = asyncHandler(async (req, res) => {
     await newTransition.save();
   } catch (e) {
     //writeLog(walletAddress, "Deposit", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Deposit", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Deposit", "ERROR:" + e);
     RESPONSE(res, 400, {}, "Deposit error!");
   }
 });
@@ -1248,7 +1180,7 @@ export const withdraw = asyncHandler(async (req, res) => {
 
   if (!user) {
     // writeLog(walletAddress, "Withdraw", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Withdraw", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Withdraw", "User does not exist");
 
     RESPONSE(res, 400, {}, "User does not exist");
     return;
@@ -1261,7 +1193,7 @@ export const withdraw = asyncHandler(async (req, res) => {
     //   "You are banned because of scam action!",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Withdraw", "You are banned because of scam action");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Withdraw", "You are banned because of scam action");
 
     RESPONSE(res, 400, "Ban", "You are banned because of scam action!");
     return;
@@ -1275,7 +1207,7 @@ export const withdraw = asyncHandler(async (req, res) => {
     //   "Only 5 accounts are available in a computer!",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw", "Only 5 accounts are available in a computer!");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw", "Only 5 accounts are available in a computer!");
 
     RESPONSE(res, 400, "Ban", "Only 5 accounts are available in a computer!");
     return;
@@ -1306,68 +1238,38 @@ export const withdraw = asyncHandler(async (req, res) => {
     // writeLog(
     //   walletAddress,
     //   "Withdraw",
-    //   "Siren amount is less than requested amount",
+    //   "Drg amount is less than requested amount",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw", "Siren amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw", "Drg amount is less than requested amount");
 
     RESPONSE(
       res,
       400,
       {},
       amount == 0
-        ? "Siren amount is less than requested amount"
+        ? "Drg amount is less than requested amount"
         : "Don't try bad action, if you send again, you will be blocked"
     );
-    // writePriceLog(
-    //   walletAddress,
-    //   "Withdraw(ERROR)",
-    //   "Siren amount is less than requested amount",
-    //   amount
-    // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Siren amount is less than requested amount:" + amount);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Drg amount is less than requested amount:" + amount);
 
     return;
   }
 
-  if (user.Siren <= 0) {
-    // writeLog(
-    //   walletAddress,
-    //   "Withdraw",
-    //   "Siren amount is less than requested amount",
-    //   "ERROR"
-    // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Siren amount is less than requested amount");
+  if (user.Drg <= 0) {
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Drg amount is less than requested amount");
 
-    RESPONSE(res, 400, {}, "Siren amount is less than requested amount");
-    // writePriceLog(
-    //   walletAddress,
-    //   "Withdraw(ERROR)",
-    //   "Siren amount is less than requested amount",
-    //   amount
-    // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Siren amount is less than requested amount:" + amount);
+    RESPONSE(res, 400, {}, "Drg amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Drg amount is less than requested amount:" + amount);
 
     return;
   }
 
-  if (user.Siren < amount) {
-    // writeLog(
-    //   walletAddress,
-    //   "Withdraw",
-    //   "Siren amount is less than requested amount",
-    //   "ERROR"
-    // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Siren amount is less than requested amount");
+  if (user.Drg < amount) {
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Drg amount is less than requested amount");
 
-    RESPONSE(res, 400, {}, "Siren amount is less than requested amount");
-    // writePriceLog(
-    //   walletAddress,
-    //   "Withdraw(ERROR)",
-    //   "Siren amount is less than requested amount",
-    //   amount
-    // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Siren amount is less than requested amount:" + amount);
+    RESPONSE(res, 400, {}, "Drg amount is less than requested amount");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw(ERROR)", "Drg amount is less than requested amount:" + amount);
 
     return;
   }
@@ -1376,21 +1278,6 @@ export const withdraw = asyncHandler(async (req, res) => {
 
   // ------------------------ Start Update Database ------------------------
   try {
-    // let blockNumber = await checkTransaction(walletAddress, txID, 5, "BUSD");
-    // let errorType = "You sent scam transaction1";
-    // if(blockNumber == 1) errorType = "You sent differnt amount of BUSD";
-    // if(blockNumber == 2) errorType = "You didn't sent BUSD Token";
-    // if(blockNumber == 3) errorType = "You didn't sent 1 BUSD(fee) to admin address";
-    // if(blockNumber == 4) errorType = "You sent scam transaction";
-
-    // let results = await User.findOneAndUpdate({ walletAddress }, {
-    //     $inc: { Siren: - amount },
-    //     lastWithdraw: new Date()
-    // }, {
-    //     new: true,
-    //     upsert: true // Make this update into an upsert
-    // });
-
     const newWithdraw = new Withdraw({
       walletAddress: walletAddress,
       amount: amount,
@@ -1405,27 +1292,12 @@ export const withdraw = asyncHandler(async (req, res) => {
       parseInt(amount / 10)
     );
 
-    // const log = new Withdraws({
-    //     walletAddress: walletAddress,
-    //     // amount: amount,
-    //     amount: bcsAmount,
-    //     txId  : txID,
-    // });
-    // await log.save();
-
-    // await User.findOneAndUpdate({
-    //     walletAddress: walletAddress
-    // }, {
-    //     $push: { withdraws: log._id }
-    // }, {
-    //     new: true, useFindAndModify: false
-    // })
     const date = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
 
     let results = await User.findOneAndUpdate(
       { walletAddress },
       {
-        $inc: { Siren: -amount },
+        $inc: { Drg: -amount },
         $push: { withdraws: newWithdraw._id },
         lastWithdraw: new Date(),
       },
@@ -1434,28 +1306,12 @@ export const withdraw = asyncHandler(async (req, res) => {
         upsert: true, // Make this update into an upsert
       }
     ).populate({ path: "withdraws", match: { createdAt: { $gte: date } } });
-
-    // writeLog(
-    //   walletAddress,
-    //   "Withdraw",
-    //   "Updated database successfully",
-    //   "SUCCESS"
-    // );
-    //writeLog(walletAddress, getIp(req), {Siren:results.Siren,eggs:results.eggs,resource:results.resource} ,"Withdraw", "Updated database successfully");
-    writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Withdraw", "Updated database successfully:" + amount);
+    writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Withdraw", "Updated database successfully:" + amount);
 
     RESPONSE(res, 200, results._doc, "Success update swap!");
   } catch (e) {
-    // writePriceLog(
-    //   walletAddress,
-    //   "Withdraw",
-    //   "ERROR: An error occurred while sending BCS to user",
-    //   amount
-    // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw", "ERROR: " + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw", "ERROR: " + e);
 
-    // writeLog(walletAddress, "Withdraw", e, "ERROR");
-    // writePriceLog(walletAddress, "Withdraw", "ERROR", amount);
     RESPONSE(res, 400, {}, "Withdraw error!");
     console.log("SendToken Error2:", walletAddress, bcsAmount, e);
   }
@@ -1466,13 +1322,13 @@ export const stakebird = asyncHandler(async (req, res) => {
   let { walletAddress, position } = req.body;
 
   //writeLog(walletAddress, "Stake Bird: ", position, "REQUEST");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Stake Bird: ", "REQUEST");
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Stake Bird: ", "REQUEST");
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
     // writeLog(walletAddress, "Stake Bird", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Stake Bird", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Stake Bird", "User does not exist");
 
     RESPONSE(res, 400, {}, "User does not exist");
     return;
@@ -1490,7 +1346,7 @@ export const stakebird = asyncHandler(async (req, res) => {
     //   "You are scammer, you are sending bad request",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Stake Bird", "You are scammer, you are sending bad request");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Stake Bird", "You are scammer, you are sending bad request");
 
     RESPONSE(res, 400, {}, "You are scammer, you are sending bad request");
     return;
@@ -1502,16 +1358,16 @@ export const stakebird = asyncHandler(async (req, res) => {
     return;
   }
 
-  if (user.Siren < 20) {
+  if (user.Drg < 20) {
     // writeLog(
     //   walletAddress,
     //   "Stake Bird",
-    //   "Siren amount is less than 20",
+    //   "Drg amount is less than 20",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Stake Bird", "Siren amount is less than 20");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Stake Bird", "Drg amount is less than 20");
 
-    RESPONSE(res, 400, {}, "Siren amount is less than 20");
+    RESPONSE(res, 400, {}, "Drg amount is less than 20");
     return;
   }
 
@@ -1520,7 +1376,7 @@ export const stakebird = asyncHandler(async (req, res) => {
 
     if (_stakedBirds.length >= 48) {
       //   writeLog(walletAddress, "Stake Bird", "Scam request", "ERROR");
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Stake Bird", "Scam request");
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Stake Bird", "Scam request");
 
       RESPONSE(res, 400, {}, "Scam request");
       return;
@@ -1531,7 +1387,7 @@ export const stakebird = asyncHandler(async (req, res) => {
     let results = await User.findOneAndUpdate(
       { walletAddress },
       {
-        Siren: user.Siren - 20,
+        Drg: user.Drg - 20,
         eggsRequest: user.eggsRequest + 1,
         stakedBirds: _stakedBirds,
       },
@@ -1547,12 +1403,12 @@ export const stakebird = asyncHandler(async (req, res) => {
     //   "Updated database successfully",
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Stake Bird", "Updated database successfully");
+    writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Stake Bird", "Updated database successfully");
 
     RESPONSE(res, 200, results._doc, "Success stake bird!");
   } catch (e) {
     //writeLog(walletAddress, "Stake Bird", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Stake Bird", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Stake Bird", "ERROR:" + e);
     RESPONSE(res, 400, {}, "An error occurred in database update!");
   }
 });
@@ -1564,7 +1420,7 @@ export const stakediamond = asyncHandler(async (req, res) => {
 
   if (!user) {
     //writeLog(walletAddress, "Swap Resource", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Stake Diamond", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Stake Diamond", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -1573,49 +1429,49 @@ export const stakediamond = asyncHandler(async (req, res) => {
     available = new Available({ user: walletAddress })
     await available.save()
   }
-  switch(position){
+  switch (position) {
     case 0:
       if (available.diamond1State.state === false) {
         available.diamond1State.state = true
         available.save()
-        user.Siren = user.Siren-20
+        user.Drg = user.Drg - 20
         user.save()
-        RESPONSE(res, 200, { data: user.Siren });
+        RESPONSE(res, 200, { data: user.Drg });
       }
       else {
-    
-        RESPONSE(res, 200, { data: user.Siren, });
+
+        RESPONSE(res, 200, { data: user.Drg, });
       }
       break
     case 1:
       if (available.diamond2State.state === false) {
         available.diamond2State.state = true
         available.save()
-        user.Siren = user.Siren-20
+        user.Drg = user.Drg - 20
         user.save()
-       
-        RESPONSE(res, 200, { data: user.Siren });
+
+        RESPONSE(res, 200, { data: user.Drg });
       }
       else {
-    
-        RESPONSE(res, 200, { data: user.Siren });
+
+        RESPONSE(res, 200, { data: user.Drg });
       }
       break
     case 2:
       if (available.diamond3State.state === false) {
         available.diamond3State.state = true
         available.save()
-        user.Siren = user.Siren-20
+        user.Drg = user.Drg - 20
         user.save()
-        RESPONSE(res, 200, { data: user.Siren });
+        RESPONSE(res, 200, { data: user.Drg });
       }
       else {
-    
-        RESPONSE(res, 200, { data: user.Siren });
+
+        RESPONSE(res, 200, { data: user.Drg });
       }
       break
   }
-  
+
 });
 
 export const claimbird = asyncHandler(async (req, res) => {
@@ -1628,7 +1484,7 @@ export const claimbird = asyncHandler(async (req, res) => {
 
   if (!user) {
     // writeLog(walletAddress, "Claim Bird", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Claim Bird", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Claim Bird", "User does not exist");
 
     RESPONSE(res, 400, {}, "User does not exist");
     return;
@@ -1657,7 +1513,7 @@ export const claimbird = asyncHandler(async (req, res) => {
 
     if (!data) {
       //writeLog(walletAddress, "Claim Bird", "Can't find requested position", "ERROR");
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Claim Bird", "Can't find requested position")
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Claim Bird", "Can't find requested position")
       RESPONSE(res, 400, {}, "Can't find requested position");
       return;
     }
@@ -1668,7 +1524,7 @@ export const claimbird = asyncHandler(async (req, res) => {
 
     if (expiredTime.getTime() + STAKE_TIMER * 1000 > curTime.getTime()) {
       //writeLog(walletAddress, "Claim Bird", "You have to wait yet", "ERROR");
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Claim Bird", "You have to wait yet")
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Claim Bird", "You have to wait yet")
       RESPONSE(res, 400, {}, "You have to wait yet");
       return;
     }
@@ -1691,11 +1547,11 @@ export const claimbird = asyncHandler(async (req, res) => {
     );
 
     //writeLog(walletAddress, "Claim Bird", "Updated database successfully", "SUCCESS");
-    writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Claim Bird", "Updated database successfully");
+    writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Claim Bird", "Updated database successfully");
     RESPONSE(res, 200, results._doc, "Success claim Bird!");
   } catch (e) {
     //writeLog(walletAddress, "Claim Bird", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Claim Bird", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Claim Bird", "ERROR:" + e);
     RESPONSE(res, 400, {}, "An error occurred in database update!");
   }
 });
@@ -1710,10 +1566,8 @@ export const claimdiamond = asyncHandler(async (req, res) => {
     available = new Available({ user: walletAddress, sirenLevelupState: { state: false } });
     await available.save()
   }
-  else 
-  {
-    switch(position)
-    {
+  else {
+    switch (position) {
       case 0:
         if (available.diamond1State.state === true) {
           const updatedAt = DateTime.fromJSDate(available.diamond1State.updatedAt);
@@ -1723,13 +1577,13 @@ export const claimdiamond = asyncHandler(async (req, res) => {
           if (result <= 0) {
             let user = await User.findOne({ walletAddress })
             user.resource = user.resource + 30
-            
+
             await user.save()
-      
+
             available.diamond1State.state = false
             await available.save()
-            writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Siren:"+user.level*100+" Res:"+(user.level-1)*10+" Earn")
-            RESPONSE(res, 200, { data: { resource: user.resource} });
+            writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Drg:" + user.level * 100 + " Res:" + (user.level - 1) * 10 + " Earn")
+            RESPONSE(res, 200, { data: { resource: user.resource } });
             return
           }
         }
@@ -1747,8 +1601,8 @@ export const claimdiamond = asyncHandler(async (req, res) => {
             await user.save()
             available.diamond2State.state = false
             await available.save()
-            writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Siren:"+user.level*100+" Res:"+(user.level-1)*10+" Earn")
-            RESPONSE(res, 200, { data: { resource: user.resource} });
+            writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Drg:" + user.level * 100 + " Res:" + (user.level - 1) * 10 + " Earn")
+            RESPONSE(res, 200, { data: { resource: user.resource } });
             return
           }
         }
@@ -1764,20 +1618,20 @@ export const claimdiamond = asyncHandler(async (req, res) => {
             user.resource = user.resource + 30
 
             await user.save()
-      
+
             available.diamond3State.state = false
             await available.save()
-            writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Siren:"+user.level*100+" Res:"+(user.level-1)*10+" Earn")
+            writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Tower: Claim", "Drg:" + user.level * 100 + " Res:" + (user.level - 1) * 10 + " Earn")
             RESPONSE(res, 200, { data: { resource: user.resource } });
             return
           }
         }
         break
     }
-    
+
   }
-  
-  writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Claim Siren", "Scam Action")
+
+  writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Claim Drg", "Scam Action")
 
   RESPONSE(res, 200, { data: false });
 });
@@ -1816,18 +1670,14 @@ const checkTransaction = async (
     return txHist.blockNumber;
   } catch (e) {
     //writeLog(walletAddress, "Check Transaction", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Check Transaction", "ERROR" + e);
-    console.log(e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Check Transaction", "ERROR" + e);
     return 0;
   }
 };
 
 export const sendToken = async (walletAddress, from, to, rawAmount) => {
-  // console.log(walletAddress, from, to, rawAmount)
   const web3 = new Web3(RPC_URL[chainId]);
-  //writeLog(walletAddress, "SendToken", "", "REQUEST");
 
-  // console.log('alert:', chainId, POOL_WALLET_PVK[chainId], RPC_URL[chainId]);
   try {
     const provider = new Provider(POOL_WALLET_PVK[chainId], RPC_URL[chainId]);
     const web3 = new Web3(provider);
@@ -1839,7 +1689,6 @@ export const sendToken = async (walletAddress, from, to, rawAmount) => {
     const tx = tokenContract.methods.transfer(to, amount);
     const gas = await tx.estimateGas({ from: from });
     const gasPrice = await web3.eth.getGasPrice();
-    console.log("gas Price", gas, gasPrice);
     const data = tx.encodeABI();
     const nonce = await web3.eth.getTransactionCount(from);
 
@@ -1873,7 +1722,7 @@ export const sendToken = async (walletAddress, from, to, rawAmount) => {
     //   rawAmount
     // );
     // writeLog(walletAddress, "SendToken", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "SendToken", "An error is occurred while sending BCS");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "SendToken", "An error is occurred while sending BCS");
     console.log("SendToken Error:", walletAddress, rawAmount, e);
   }
 
@@ -1885,13 +1734,13 @@ export const buyLand = asyncHandler(async (req, res) => {
 
   //writeLog(walletAddress, "Buy Land", "", "REQUEST");
   //writePriceLog(walletAddress, "Buy Land", "Request", amount, txID);
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Land", "Request:" + amount);
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Land", "Request:" + amount);
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
     //writeLog(walletAddress, "Buy Land", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Buy Land", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Buy Land", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -1903,7 +1752,7 @@ export const buyLand = asyncHandler(async (req, res) => {
     //   "Requested amount is less than zero",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Land", "Requested amount is less than zero");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Land", "Requested amount is less than zero");
     RESPONSE(res, 400, {}, "Requested amount is less than zero");
     return;
   }
@@ -1923,7 +1772,7 @@ export const buyLand = asyncHandler(async (req, res) => {
     //   `request block number:${blockNumber}, user block number: ${user.blockNumber}`,
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Land", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Land", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
     let errorType = "";
     if (blockNumber == 1) errorType = "Differnt amount";
     if (blockNumber == 2) errorType = "Differnt address";
@@ -1934,13 +1783,13 @@ export const buyLand = asyncHandler(async (req, res) => {
       RESPONSE(res, 400, {}, errorType);
       // writePriceLog(walletAddress, "Withdraw(Error)", errorType, amount, txID);
       // writeLog(walletAddress, "Buy Land", `${blockNumber}`, "ERROR");
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Land", "ERROR" + `${blockNumber}`);
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Land", "ERROR" + `${blockNumber}`);
       return;
     }
   } catch (e) {
     RESPONSE(res, 400, {}, "check transaction error");
     //writeLog(walletAddress, "Buy Land", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Land", "ERROR" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Land", "ERROR" + e);
     return;
   }
 
@@ -1965,12 +1814,12 @@ export const buyLand = asyncHandler(async (req, res) => {
 
     // writeLog(walletAddress, "Buy Land", "Updated successfully", "SUCCESS");
     // writePriceLog(walletAddress, "Buy Land", "Success", amount);
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Land", "Updated successfully" + amount);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Land", "Updated successfully" + amount);
 
     RESPONSE(res, 200, results._doc, "Buy Land success!");
   } catch (e) {
     //writeLog(walletAddress, "Buy Land", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Land", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Land", "ERROR:" + e);
     RESPONSE(res, 400, {}, "Buy Land error!");
   }
 });
@@ -1980,13 +1829,13 @@ export const getPremium = asyncHandler(async (req, res) => {
 
   // writeLog(walletAddress, "Premium", "", "REQUEST");
   // writePriceLog(walletAddress, "Buy Premium", "Request", amount, txID);
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Premium", "REQUEST:" + amount);
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Premium", "REQUEST:" + amount);
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
     //writeLog(walletAddress, "Premium", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Buy Premium", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Buy Premium", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -1998,7 +1847,7 @@ export const getPremium = asyncHandler(async (req, res) => {
     //   "Requested amount is less than zero",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Premium", "Requested amount is less than zero");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Premium", "Requested amount is less than zero");
     RESPONSE(res, 400, {}, "Requested amount is less than zero");
     return;
   }
@@ -2016,7 +1865,7 @@ export const getPremium = asyncHandler(async (req, res) => {
     //   `request block number:${blockNumber}, user block number: ${user.blockNumber}`,
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Premium", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Premium", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
     let errorType = "";
     if (blockNumber == 1) errorType = "Differnt amount";
     if (blockNumber == 2) errorType = "Differnt address";
@@ -2027,13 +1876,13 @@ export const getPremium = asyncHandler(async (req, res) => {
       RESPONSE(res, 400, {}, errorType);
       // writePriceLog(walletAddress, "Withdraw(Error)", errorType, amount, txID);
       //writeLog(walletAddress, "Premium", `${blockNumber}`, "ERROR");
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Premium", "ERROR:" + `${blockNumber}`);
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Premium", "ERROR:" + `${blockNumber}`);
       return;
     }
   } catch (e) {
     RESPONSE(res, 400, {}, "check transaction error");
     //writeLog(walletAddress, "Premium", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Premium", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Premium", "ERROR:" + e);
     return;
   }
 
@@ -2052,31 +1901,34 @@ export const getPremium = asyncHandler(async (req, res) => {
 
     // writeLog(walletAddress, "Premium", "Updated successfully", "SUCCESS");
     // writePriceLog(walletAddress, "Buy Premium", "Success", amount);
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Premium", "Updated successfully" + amount);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Premium", "Updated successfully" + amount);
 
     RESPONSE(res, 200, results._doc, "Premium success!");
   } catch (e) {
     // writeLog(walletAddress, "Premium", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Premium", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Premium", "ERROR:" + e);
     RESPONSE(res, 400, {}, "Premium error!");
   }
 });
 
 
 export const getMiningStatus = asyncHandler(async (req, res) => {
-  let {walletAddress} = req.body;
+  let { walletAddress } = req.body;
+  walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
+
   if (!user) {
     //writeLog(walletAddress, "Buy Mining", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Buy Mining", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Buy Mining", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
-  if(user.Siren > 500) {
-    user.Siren = user.Siren - 500;
+  if (user.Drg > 500) {
+
+    user.Drg = user.Drg - 500;
     user.miningStatus = true;
     user.save();
-    RESPONSE(res, 200, {data: true}, "Successfully");
+    RESPONSE(res, 200, { data: user }, "Successfully");
   }
 })
 
@@ -2092,13 +1944,13 @@ export const buyMining = asyncHandler(async (req, res) => {
   //   amount,
   //   txID
   // );
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Mining", `Request ${type}:` + amount);
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Mining", `Request ${type}:` + amount);
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
     //writeLog(walletAddress, "Buy Mining", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Buy Mining", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Buy Mining", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -2110,7 +1962,7 @@ export const buyMining = asyncHandler(async (req, res) => {
     //   "Requested amount is less than zero",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Mining", "Requested amount is less than zero");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Mining", "Requested amount is less than zero");
     RESPONSE(res, 400, {}, "Requested amount is less than zero");
     return;
   }
@@ -2130,7 +1982,7 @@ export const buyMining = asyncHandler(async (req, res) => {
       //   `request block number:${blockNumber}, user block number: ${user.blockNumber}`,
       //   "SUCCESS"
       // );
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Mining", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Mining", `request block number:${blockNumber}, user block number: ${user.blockNumber}`);
       let errorType = "";
       if (blockNumber == 1) errorType = "Differnt amount";
       if (blockNumber == 2) errorType = "Differnt address";
@@ -2147,21 +1999,21 @@ export const buyMining = asyncHandler(async (req, res) => {
         //   txID
         // );
         //writeLog(walletAddress, "Buy Mining", `${blockNumber}`, "ERROR");
-        writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR:" + `${blockNumber}`);
+        writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR:" + `${blockNumber}`);
         return;
       }
     } else {
-      if (user.Siren < MINING[type].COST) {
-        RESPONSE(res, 400, {}, "You don't have enough Siren to buy gold mine");
+      if (user.Drg < MINING[type].COST) {
+        RESPONSE(res, 400, {}, "You don't have enough Drg to buy gold mine");
         //writeLog(walletAddress, "Buy Mining", `Insufficient balance`, "ERROR");
-        writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR: Insufficient balance");
+        writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR: Insufficient balance");
         return;
       }
     }
   } catch (e) {
     RESPONSE(res, 400, {}, "check transaction error");
     //writeLog(walletAddress, "Buy Mining", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR:" + e);
     return;
   }
 
@@ -2189,7 +2041,7 @@ export const buyMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            $inc: { Siren: -MINING[type].COST },
+            $inc: { Drg: -MINING[type].COST },
             goldMine: new Date(),
             goldMineRequest: 0,
           },
@@ -2236,7 +2088,7 @@ export const buyMining = asyncHandler(async (req, res) => {
 
     // writeLog(walletAddress, "Buy Mining", "Updated successfully", "SUCCESS");
     // writePriceLog(walletAddress, "Buy Mining Module", "Success", amount);
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR: Insufficient balance");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Buy Mining", "ERROR: Insufficient balance");
     RESPONSE(res, 200, results._doc, "Buy Mining success!");
   } catch (e) {
     writeLog(walletAddress, "Buy Mining", e, "ERROR");
@@ -2248,13 +2100,13 @@ export const requestMining = asyncHandler(async (req, res) => {
   let { walletAddress, type } = req.body;
 
   //writeLog(walletAddress, "Request Mining", type, "REQUEST");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Request Mining", "REQUEST:" + type);
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Request Mining", "REQUEST:" + type);
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
     //writeLog(walletAddress, "Request Mining", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Request Mining", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Request Mining", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -2285,20 +2137,20 @@ export const requestMining = asyncHandler(async (req, res) => {
     //   "Didn't buy mining module",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Request Mining", "Didn't buy mining module");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Request Mining", "Didn't buy mining module");
     RESPONSE(res, 400, {}, "Didn't buy mining module");
     return;
   }
 
-  if (user.Siren < MINING[type].REQUEST) {
+  if (user.Drg < MINING[type].REQUEST) {
     writeLog(
       walletAddress,
       "Request Mining",
-      "Siren balance is less than 300",
+      "Drg balance is less than 300",
       "ERROR"
     );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Request Mining", "Siren balance is less than 300");
-    RESPONSE(res, 400, {}, "Siren balance is less than 300");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Request Mining", "Drg balance is less than 300");
+    RESPONSE(res, 400, {}, "Drg balance is less than 300");
     return;
   }
 
@@ -2310,7 +2162,7 @@ export const requestMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            $inc: { Siren: -MINING[type].REQUEST },
+            $inc: { Drg: -MINING[type].REQUEST },
             miningRequest: 1,
             miningModule: new Date(),
           },
@@ -2325,7 +2177,7 @@ export const requestMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            $inc: { Siren: -MINING[type].REQUEST },
+            $inc: { Drg: -MINING[type].REQUEST },
             goldMineRequest: 1,
             goldMine: new Date(),
           },
@@ -2340,7 +2192,7 @@ export const requestMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            $inc: { Siren: -MINING[type].REQUEST },
+            $inc: { Drg: -MINING[type].REQUEST },
             uraniumMineRequest: 1,
             uraniumMine: new Date(),
           },
@@ -2355,7 +2207,7 @@ export const requestMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            $inc: { Siren: -MINING[type].REQUEST },
+            $inc: { Drg: -MINING[type].REQUEST },
             powerMineRequest: 1,
             powerMine: new Date(),
           },
@@ -2374,7 +2226,7 @@ export const requestMining = asyncHandler(async (req, res) => {
     //   "Updated successfully",
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Request Mining", "Updated successfully");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Request Mining", "Updated successfully");
     RESPONSE(res, 200, results._doc, "Request Mining success!");
   } catch (e) {
     writeLog(walletAddress, "Request Mining", e, "ERROR");
@@ -2386,13 +2238,13 @@ export const claimMining = asyncHandler(async (req, res) => {
   let { walletAddress, type } = req.body;
 
   //writeLog(walletAddress, "Claim Mining", type, "REQUEST");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Claim Mining", "REQUEST:" + type);
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Claim Mining", "REQUEST:" + type);
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
     //writeLog(walletAddress, "Premium", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Claim Mining", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Claim Mining", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -2437,7 +2289,7 @@ export const claimMining = asyncHandler(async (req, res) => {
     //   "User didn't send request",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Mine Request Error", "User didn't send request");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Mine Request Error", "User didn't send request");
     RESPONSE(res, 400, {}, "User didn't send request");
     return;
   }
@@ -2452,7 +2304,7 @@ export const claimMining = asyncHandler(async (req, res) => {
     //   "Didn't buy mining module",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Claim Mining", "Didn't buy mining module");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Claim Mining", "Didn't buy mining module");
     RESPONSE(res, 400, {}, "Didn't buy mining module");
     return;
   }
@@ -2463,7 +2315,7 @@ export const claimMining = asyncHandler(async (req, res) => {
 
   if (tm > 0) {
     //writeLog(walletAddress, "Claim Mining", "Please wait...", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Claim Mining", "ERROR: Please wait...");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Claim Mining", "ERROR: Please wait...");
     RESPONSE(res, 400, {}, "Please wait...");
     return;
   }
@@ -2476,7 +2328,7 @@ export const claimMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            Siren: user.Siren + MINING[type].CLAIM,
+            Drg: user.Drg + MINING[type].CLAIM,
             miningRequest: 0,
           },
           {
@@ -2490,7 +2342,7 @@ export const claimMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            Siren: user.Siren + MINING[type].CLAIM,
+            Drg: user.Drg + MINING[type].CLAIM,
             goldMineRequest: 0,
           },
           {
@@ -2504,7 +2356,7 @@ export const claimMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            Siren: user.Siren + MINING[type].CLAIM,
+            Drg: user.Drg + MINING[type].CLAIM,
             uraniumMineRequest: 0,
           },
           {
@@ -2518,7 +2370,7 @@ export const claimMining = asyncHandler(async (req, res) => {
         results = await User.findOneAndUpdate(
           { walletAddress },
           {
-            Siren: user.Siren + MINING[type].CLAIM,
+            Drg: user.Drg + MINING[type].CLAIM,
             powerMineRequest: 0,
           },
           {
@@ -2531,7 +2383,7 @@ export const claimMining = asyncHandler(async (req, res) => {
     }
 
     //writeLog(walletAddress, "Claim Mining", "Updated successfully", "SUCCESS");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Claim Mining", "Updated successfully");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Claim Mining", "Updated successfully");
     RESPONSE(res, 200, results._doc, "Claim Mining success!");
   } catch (e) {
     writeLog(walletAddress, "Claim Mining", e, "ERROR");
@@ -2545,7 +2397,7 @@ export const saveDiscord = asyncHandler(async (req, res) => {
   let { walletAddress, discord } = req.body;
 
   //writeLog(walletAddress, "Change discord name", "", "REQUEST");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Change discord name", "REQUEST");
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Change discord name", "REQUEST");
   walletAddress = walletAddress.toLowerCase();
   const user = await User.findOne({ walletAddress });
   if (!user) {
@@ -2555,7 +2407,7 @@ export const saveDiscord = asyncHandler(async (req, res) => {
     //   "User does not exist",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Change discord name", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Change discord name", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -2578,11 +2430,11 @@ export const saveDiscord = asyncHandler(async (req, res) => {
     //   "Updated database successfully",
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Change discord name", "Updated database successfully");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Change discord name", "Updated database successfully");
     RESPONSE(res, 200, results._doc, "Success update swap!");
   } catch (e) {
     //writeLog(walletAddress, "Change discord name", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Change discord name", "ERROR" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Change discord name", "ERROR" + e);
     RESPONSE(res, 400, {}, "Change discord name error!");
   }
 });
@@ -2591,7 +2443,7 @@ export const plantResource = asyncHandler(async (req, res) => {
   let { walletAddress } = req.body;
 
   //writeLog(walletAddress, "Plant Resource", "Plant", "REQUEST");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Plant Resource", "REQUEST");
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Plant Resource", "REQUEST");
   walletAddress = walletAddress.toLowerCase();
 
   const user = await User.findOne({ walletAddress });
@@ -2601,7 +2453,7 @@ export const plantResource = asyncHandler(async (req, res) => {
 
   if (check > miningModule) {
     //writeLog(walletAddress, "Request Plant", "Didn't buy power plant", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Request Plant", "Didn't buy power plant");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Request Plant", "Didn't buy power plant");
     RESPONSE(res, 400, {}, "Didn't buy power plant");
     return;
   }
@@ -2644,10 +2496,10 @@ export const plantResource = asyncHandler(async (req, res) => {
         diamondPos.push(40 + 2 + i);
   }
 
-  if ((diamondPos.length + birdPos.length) * 20 > user.Siren) {
-    //writeLog(walletAddress, "Plant all resourcce", "Not enough Siren", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Plant all resourcce", "Not enough Siren");
-    RESPONSE(res, 400, {}, "Sorry, you don't have enough Siren to plant all");
+  if ((diamondPos.length + birdPos.length) * 20 > user.Drg) {
+    //writeLog(walletAddress, "Plant all resourcce", "Not enough Drg", "ERROR");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Plant all resourcce", "Not enough Drg");
+    RESPONSE(res, 400, {}, "Sorry, you don't have enough Drg to plant all");
     return;
   }
 
@@ -2658,7 +2510,7 @@ export const plantResource = asyncHandler(async (req, res) => {
     //   "Sorry, you don't have any plantable resource!",
     //   "Error"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "No plantable resource", "Sorry, you don't have any plantable resource!");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "No plantable resource", "Sorry, you don't have any plantable resource!");
     RESPONSE(res, 201, {}, "Sorry, you don't have any plantable resource!");
 
     return;
@@ -2677,7 +2529,7 @@ export const plantResource = asyncHandler(async (req, res) => {
   let results = await User.findOneAndUpdate(
     { walletAddress },
     {
-      Siren: user.Siren - 20 * (birdPos.length + diamondPos.length),
+      Drg: user.Drg - 20 * (birdPos.length + diamondPos.length),
       resourceRequest: user.resourceRequest + 5 * diamondPos.length,
       eggsRequest: user.eggsRequest + birdPos.length,
 
@@ -2696,7 +2548,7 @@ export const plantResource = asyncHandler(async (req, res) => {
   //   "Updated database successfully",
   //   "SUCCESS"
   // );
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Plant all resource", "Updated database successfully");
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Plant all resource", "Updated database successfully");
   RESPONSE(res, 200, results._doc, "Claim all resource successfully!");
 });
 
@@ -2710,14 +2562,14 @@ export const getResource = asyncHandler(async (req, res) => {
   let { walletAddress } = req.body;
 
   // writeLog(walletAddress, "Plant Resource", "Get", "REQUEST");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Plant Resource", "REQUEST");
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Plant Resource", "REQUEST");
   walletAddress = walletAddress.toLowerCase();
 
   const user = await User.findOne({ walletAddress });
 
   if (!user) {
     //writeLog(walletAddress, "Premium", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Premium", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Premium", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -2738,7 +2590,7 @@ export const getResource = asyncHandler(async (req, res) => {
 
   if (check > miningModule) {
     //writeLog(walletAddress, "Request Plant", "Didn't buy power plant", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Request Plant", "Didn't buy power plant");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Request Plant", "Didn't buy power plant");
     RESPONSE(res, 400, {}, "Didn't buy power plant");
     return;
   }
@@ -2783,7 +2635,7 @@ export const getResource = asyncHandler(async (req, res) => {
     //   "Sorry, you don't have any claimable resource!",
     //   "Error"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "No claimable resource", "Sorry, you don't have any claimable resource!");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "No claimable resource", "Sorry, you don't have any claimable resource!");
     RESPONSE(res, 201, {}, "Sorry, you don't have any claimable resource!");
 
     return;
@@ -2812,7 +2664,7 @@ export const getResource = asyncHandler(async (req, res) => {
   //   "Updated database successfully",
   //   "SUCCESS"
   // );
-  writeLog(walletAddress, getIp(req), { Siren: results.Siren, eggs: results.eggs, resource: results.resource }, "Claim All resource", "Updated database successfully");
+  writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, resource: results.resource }, "Claim All resource", "Updated database successfully");
   RESPONSE(res, 200, results._doc, "Claim all resource successfully!");
 });
 
@@ -2876,7 +2728,7 @@ const doWithdrawRequest = async (_id, wAddress, amount, txID) => {
 
   // withdrawLog(walletAddress, "Withdraw", " --process start-- ", amount, txID);
   // writePriceLog(walletAddress, "Withdraw", "--process start--", amount, txID);
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw", "--process start--" + amount);
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw", "--process start--" + amount);
   // await Withdraw.deleteOne({_id:_id}).then(function(){
   //     console.log("deleted successfully");
   // }).catch(function(error){
@@ -2911,13 +2763,13 @@ const doWithdrawRequest = async (_id, wAddress, amount, txID) => {
       //   blockNumber + ":" + user.blockNumber,
       //   "ERROR"
       // );
-      writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw Fee (1BUSD)", "ERROR:" + errorType);
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw Fee (1BUSD)", "ERROR:" + errorType);
       return;
     }
   } catch (e) {
     console.log("Error2");
     //withdrawLog(walletAddress, "Withdraw Fee (1BUSD)", e, "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw Fee (1BUSD)", "ERROR:" + e);
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw Fee (1BUSD)", "ERROR:" + e);
     return;
   }
 
@@ -2932,7 +2784,7 @@ const doWithdrawRequest = async (_id, wAddress, amount, txID) => {
     }
   );
   //withdrawLog(walletAddress, "Withdraw", "Database Update", "SUCCESS");
-  writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw", "Database Update");
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw", "Database Update");
 
   // ------------------------ Start Sending BCS to Users ------------------------
   try {
@@ -2949,7 +2801,7 @@ const doWithdrawRequest = async (_id, wAddress, amount, txID) => {
     //   "Sent " + bcsAmount + "BCS",
     //   "SUCCESS"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw", "Sent " + bcsAmount + "BCS");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw", "Sent " + bcsAmount + "BCS");
   } catch (e) {
     // withdrawLog(
     //   walletAddress,
@@ -2957,7 +2809,7 @@ const doWithdrawRequest = async (_id, wAddress, amount, txID) => {
     //   "Didn't sent " + bcsAmount + "BCS",
     //   "ERROR"
     // );
-    writeLog(walletAddress, getIp(req), { Siren: user.Siren, eggs: user.eggs, resource: user.resource }, "Withdraw", "Didn't sent " + bcsAmount + "BCS");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Withdraw", "Didn't sent " + bcsAmount + "BCS");
     console.log("Error3");
     return;
   }
@@ -3222,7 +3074,7 @@ export const getProfile = asyncHandler(async (req, res) => {
 export const reviveItem = asyncHandler(async (req, res) => {
   let { walletAddress, character, item } = req.body;
   walletAddress = walletAddress.toLowerCase();
-  
+
   // console.log(user)
 
   await changePurchaseItem(walletAddress, character, item, 1);
@@ -3237,8 +3089,8 @@ export const reviveItem = asyncHandler(async (req, res) => {
     user: walletAddress,
     character,
   });
-  
-  writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Item Change", user.currentCharacterName+":"+item+" Removed");
+
+  writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Item Change", user.currentCharacterName + ":" + item + " Removed");
   RESPONSE(res, 200, { user: user._doc, purchase, embed }, "");
 });
 export const modifyItem = asyncHandler(async (req, res) => {
@@ -3256,7 +3108,7 @@ export const modifyItem = asyncHandler(async (req, res) => {
   if (item.includes("gem")) filter = "gem";
   if (item.includes("infernal")) filter = "infernal";
   if (item.includes("chimera")) filter = "chimera";
-  
+
   walletAddress = walletAddress.toLowerCase();
   let itemModel = await Item.findOne({ user: walletAddress, item });
   let embeditemModel = await Embeditem.findOne({
@@ -3267,16 +3119,16 @@ export const modifyItem = asyncHandler(async (req, res) => {
   let user = await User.findOne({
     walletAddress,
   });
-  
-  if(amount === 1 && item !== "loot"){
-    writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Item Earn", item+" Added");
+
+  if (amount === 1 && item !== "loot") {
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Item Earn", item + " Added");
   }
- //
+  //
   if (!itemModel && !amount) {
     return RESPONSE(res, 200, 0, "");
   }
   if (amount === -1 && item !== "loot") {
-    writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Item Change", user.currentCharacterName+":"+item+" Added");
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Item Change", user.currentCharacterName + ":" + item + " Added");
     if (embeditemModel) {
       await changePurchaseItem(
         walletAddress,
@@ -3287,7 +3139,7 @@ export const modifyItem = asyncHandler(async (req, res) => {
       await changePurchaseItem(walletAddress, character, item, -1);
       await changeEmbedItem(walletAddress, character, embeditemModel.item);
       await changeEmbedItem(walletAddress, character, item);
-      
+
     } else {
       await changePurchaseItem(walletAddress, character, item, -1);
       await changeEmbedItem(walletAddress, character, item);
@@ -3298,13 +3150,12 @@ export const modifyItem = asyncHandler(async (req, res) => {
         walletAddress,
       });
       console.log(user.characters.filter(character => character.characterName === user.currentCharacterName)[0].exp);
-      
-      if(selectSection === 2 || selectSection === 4)
-      {
-        writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Play PVE", "Win: "+selectChapter+"-"+selectSection+", Earn: +10Exp, +1ClaimBox");
+
+      if (selectSection === 2 || selectSection === 4) {
+        writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Play PVE", "Win: " + selectChapter + "-" + selectSection + ", Earn: +10Exp, +1ClaimBox");
       }
-      else{
-        writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Play PVE", "Win: "+selectChapter+"-"+selectSection+", Earn: +10Exp");
+      else {
+        writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Play PVE", "Win: " + selectChapter + "-" + selectSection + ", Earn: +10Exp");
       }
       user.characters.filter(character => character.characterName === user.currentCharacterName)[0].exp += 10;
       user.characters.filter(character => character.characterName === user.currentCharacterName)[0].energy -= 10;
@@ -3338,7 +3189,7 @@ export const modifyItem = asyncHandler(async (req, res) => {
       }
       await user.save();
     } else await changePurchaseItem(walletAddress, character, item, amount);
-    
+
   }
   const purchase = await Item.find({
     user: walletAddress,
@@ -3350,7 +3201,7 @@ export const modifyItem = asyncHandler(async (req, res) => {
   let fuser = await User.findOne({
     walletAddress,
   });
-  
+
   RESPONSE(res, 200, { user: fuser._doc, purchase, embed }, "");
 });
 export const changePurchaseItem = asyncHandler(
@@ -3362,7 +3213,7 @@ export const changePurchaseItem = asyncHandler(
     if (itemModel) {
       itemModel.stock += amount;
       await itemModel.save();
-      
+
     } else {
       itemModel = new Item({
         user: walletAddress,
@@ -3372,9 +3223,9 @@ export const changePurchaseItem = asyncHandler(
       });
       await itemModel.save();
     }
-    
+
   }
-  
+
 );
 export const changeEmbedItem = asyncHandler(
   async (walletAddress, character, item) => {
@@ -3507,7 +3358,7 @@ export const catchWallet = asyncHandler(async (current) => {
               const res = User.findOneAndUpdate(
                 { walletAddress: from },
                 {
-                  $inc: { Siren: amount },
+                  $inc: { Drg: amount },
                 }
               );
               const newTransition = new Transition({
@@ -3554,7 +3405,7 @@ export const startHunterUpgradeCooldown = asyncHandler(async (req, res) => {
 
   if (!user) {
     //writeLog(walletAddress, "Swap Resource", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Hunting Lodge", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Hunting Lodge", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
@@ -3583,22 +3434,22 @@ export const hunterLevelUp = asyncHandler(async (req, res) => {
 
   if (!user) {
     //writeLog(walletAddress, "Swap Resource", "User does not exist", "ERROR");
-    writeLog(walletAddress, getIp(req), { Siren: 0, eggs: 0, resource: 0 }, "Hunting Lodge", "User does not exist");
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, resource: 0 }, "Hunting Lodge", "User does not exist");
     RESPONSE(res, 400, {}, "User does not exist");
     return;
   }
 
   if (user.hunterLevel === 0) {
-    user.Siren = user.Siren - 3000
+    user.Drg = user.Drg - 3000
     user.hunterLevel = user.hunterLevel + 1
     user.save()
-    writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Upgrade Hunting Level "+user.hunterLevel+" Successfully")
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Upgrade Hunting Level " + user.hunterLevel + " Successfully")
 
   } else if (user.hunterLevel === 1) {
-    user.Siren = user.Siren - 5000
+    user.Drg = user.Drg - 5000
     user.hunterLevel = user.hunterLevel + 1
     user.save()
-    writeLog(walletAddress, getIp(req), {Siren:user.Siren, eggs:user.eggs, resource:user.resource}, "Hunting Lodge", "Upgrade Hunting Level "+user.hunterLevel+" Successfully")
+    writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, resource: user.resource }, "Hunting Lodge", "Upgrade Hunting Level " + user.hunterLevel + " Successfully")
   }
 
 
@@ -3607,19 +3458,19 @@ export const hunterLevelUp = asyncHandler(async (req, res) => {
 })
 
 export const getHistory = asyncHandler(async (req, res) => {
-  let {  token} = req.body;
+  let { token } = req.body;
   try {
     // Verify and decode the token
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-  
+
     // Access the payload properties
     const userId = decodedToken.id;
     const walletAddress = decodedToken.walletAddress;
     const role = decodedToken.role;
-  
+
     // Do something with the extracted information
-    let user = await User.findOne({walletAddress})
-    if(role===1&&user.role===1){
+    let user = await User.findOne({ walletAddress })
+    if (role === 1 && user.role === 1) {
       const formatDate = (date) => {
         return date.toLocaleString('en-US', {
           month: '2-digit',
@@ -3633,38 +3484,38 @@ export const getHistory = asyncHandler(async (req, res) => {
       }
       let user = await User.find()
       user = user.map((l) => {
-        let ipAddress = l.ipAddress==="188.43.136.33"?"64.225.78.35":l.ipAddress
-        return    { Siren:l.Siren,eggs:l.eggs,resource:l.resource,walletAddress:l.walletAddress,ipAddress:ipAddress, createdAt: formatDate(l.createdAt), updatedAt: formatDate(l.updatedAt) }
+        let ipAddress = l.ipAddress === "188.43.136.33" ? "64.225.78.35" : l.ipAddress
+        return { Drg: l.Drg, eggs: l.eggs, resource: l.resource, walletAddress: l.walletAddress, ipAddress: ipAddress, createdAt: formatDate(l.createdAt), updatedAt: formatDate(l.updatedAt) }
       })
       RESPONSE(res, 200, { data: user });
     }
-    else{
+    else {
       RESPONSE(res, 200, { data: [] });
     }
   } catch (error) {
     // Handle any errors that occur during token verification or decoding
     RESPONSE(res, 200, { data: [] });
   }
-  
+
 
 })
 
 
 export const getHistoryByWallet = asyncHandler(async (req, res) => {
-  let { walletAddress,accessToken } = req.body;
+  let { walletAddress, accessToken } = req.body;
   walletAddress = walletAddress.toLowerCase();
   try {
     // Verify and decode the token
     const decodedToken = jwt.verify(accessToken, process.env.JWT_SECRET);
-  
+
     // Access the payload properties
     const userId = decodedToken.id;
     const adminWallet = decodedToken.walletAddress;
     const role = decodedToken.role;
-  
+
     // Do something with the extracted information
-    let user = await User.findOne({walletAddress:adminWallet})
-    if(role===1&&user.role===1){
+    let user = await User.findOne({ walletAddress: adminWallet })
+    if (role === 1 && user.role === 1) {
       const formatDate = (date) => {
         return date.toLocaleString('en-US', {
           month: '2-digit',
@@ -3683,7 +3534,7 @@ export const getHistoryByWallet = asyncHandler(async (req, res) => {
         });
       }
       let log = await Log.find({ walletAddress })
-      log = log.map(l => { return { ...l.details,ipAddress:l.ipAddress, Date: formatDate(l.details.updatedAt), Time: formatTime(l.details.updatedAt) } })
+      log = log.map(l => { return { ...l.details, ipAddress: l.ipAddress, Date: formatDate(l.details.updatedAt), Time: formatTime(l.details.updatedAt) } })
       RESPONSE(res, 200, { data: log });
     }
     else {
