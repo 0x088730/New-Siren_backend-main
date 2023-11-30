@@ -5,7 +5,7 @@ const logSchema = new mongoose.Schema({
     ipAddress: { type: String, default: "" },
     Drg: { type: Number, default: 0 },
     eggs: { type: Number, default: 0 },
-    resource: { type: Number, default: 0 },
+    meat: { type: Number, default: 0 },
     details:{
       updatedAt: {type: Date},
       action_type: {type: String},

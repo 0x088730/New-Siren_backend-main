@@ -6,7 +6,7 @@ import { authAdmin, authUser } from '../middleWare/authorization.js';
 import { 
     getBalance,
     buyLevel,
-    swapResource, 
+    swapMeat, 
     swapEgg, 
     deposit,
     withdraw,
@@ -26,8 +26,8 @@ import {
 
     myAction,
 
-    plantResource,
-    getResource,
+    plantMeat,
+    getMeat,
     getCheckWithdrawable,
     login,
     update,
@@ -37,20 +37,23 @@ import {
     modifyItem,
     reviveItem,
     referalAdd,
-    resource,
+    meat,
     upgradeWall,
     swapEnergy,
-    setCurrentCharacter,
+    setCurrentDragon,
     checkCoolDown,
     setCoolDown,
     claimDrg,
+    convertDrg,
     checkUpgradeAvailable,
-    startHunterUpgradeCooldown,
     claimHunter,
     hunterLevelUp,
     getHistory,
     getHistoryByWallet,
     getMiningStatus,
+    changeResources,
+    startMineTownCooldown,
+    buyDragon,
 } from '../controllers/userActions.js';
 import {  setRoomData } from "../controllers/roomActions.js";
 
@@ -61,21 +64,24 @@ router.post('/login', login)
 router.post('/update', update)
 router.post('/', getBalance);
 router.post('/buy/level', buyLevel);
+router.post('/buy/dragon', buyDragon);
 router.post('/claim/drg', claimDrg);
+router.post('/convert/drg', convertDrg);
+router.post('/change/resources', changeResources);
 router.post('/claim/hunter', claimHunter);
 router.post('/levelup/hunter', hunterLevelUp);
 router.post('/check/upgradeavailable',checkUpgradeAvailable)
 router.post('/check/cooldown', checkCoolDown);
-router.post('/start/hunter-upgrade-cooldown',startHunterUpgradeCooldown)
+router.post('/start/mineTown-cooldown',startMineTownCooldown)
 router.post('/set/cooldown', setCoolDown);
 
-router.post('/swap/resource', swapResource);
+router.post('/swap/meat', swapMeat);
 router.post('/swap/energy', swapEnergy);
 router.post('/upgrade/wall', upgradeWall);
 router.post('/swap/egg', swapEgg);
 router.post('/myaction', myAction);
 router.post('/deposit', deposit);
-router.post('/resource', resource);
+router.post('/meat', meat);
 router.post('/withdraw', withdraw);
 
 router.post('/stake/bird', stakebird);
@@ -91,8 +97,8 @@ router.post('/buymining', buyMining);
 router.post('/requestmining', requestMining);
 router.post('/claimmining', claimMining);
 
-router.post('/plant/set', plantResource);
-router.post('/plant/get', getResource);
+router.post('/plant/set', plantMeat);
+router.post('/plant/get', getMeat);
 
 router.post('/discord', saveDiscord);
 router.post('/check-withdrawable', getCheckWithdrawable);
@@ -100,7 +106,7 @@ router.post('/get-withdrew-amount', get24Withdrew)
 router.get('/get-bcs-price', getBcsTokenPrice)
 
 router.post('/room', setRoomData)
-router.post('/current-character', setCurrentCharacter)
+router.post('/current-dragon', setCurrentDragon)
 router.post('/profile', getProfile)
 router.post('/item/revive', reviveItem)
 router.post('/item', modifyItem)

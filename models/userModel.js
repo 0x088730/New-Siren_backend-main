@@ -5,9 +5,9 @@ const userSchema = new mongoose.Schema(
     Drg: { type: Number, default: 90000 },
 
     eggsRequest: { type: Number, default: 0 },
-    resourceRequest: { type: Number, default: 0 },
+    meatRequest: { type: Number, default: 0 },
     eggs: { type: Number, default: 0 },
-    resource: { type: Number, default: 0 },
+    meat: { type: Number, default: 0 },
 
     blockNumber: { type: Number, default: 10 },
     premium: { type: Date, default: 0 },
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
 
     miningModule: { type: Date, default: 0 },
     miningRequest: { type: Number, required: true, default: 0 },
-    miningStatus: {type: Boolean, default: false},
+    miningStatus: { type: Boolean, default: false },
 
     goldMine: { type: Date, default: 0 },
     goldMineRequest: { type: Number, required: true, default: 0 },
@@ -69,17 +69,18 @@ const userSchema = new mongoose.Schema(
     exp: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
     damage: { type: Number, default: 150 },
-    rarity: { type: Number, default: 0},
-    characters: [
+    rarity: { type: Number, default: 0 },
+    dragons: [
       {
-        characterName: { type: String ,default:'siren-1'},
-        characterNo: { type: Number, default:0},
-        hp : { type: Number,default:1600},
-        critical : { type: Number,default:10},
-        energy : { type: Number,default:500},
-        exp: { type: Number,default:420},
-        damage: { type: Number,default:150},
-        rarity: { type: Number,default:0}
+        dragonName: { type: String, default: 'siren-1' },
+        dragonNo: { type: Number, default: 0 },
+        hp: { type: Number, default: 1600 },
+        critical: { type: Number, default: 10 },
+        energy: { type: Number, default: 500 },
+        exp: { type: Number, default: 420 },
+        damage: { type: Number, default: 150 },
+        rarity: { type: Number, default: 0 },
+        level: {type: Number, default: 1},
       },
     ],
     room: {
@@ -90,13 +91,13 @@ const userSchema = new mongoose.Schema(
     critical: { type: Number, default: 0 },
     wall: { type: Number, default: 0 },
     energy: { type: Number, default: 50 },
-    currentCharacterName: {type: String, default: "siren-1"},
-    hunterLevel: {type: Number,default:0},
-    claimBox:{ 
-      drg:{type: Number,default:-2},
-      egg:{type: Number,default:-2},
-      claim:{type: Boolean,default:false},
-      userCount:{type: Number, default:0}
+    currentDragonName: { type: String, default: "siren-1" },
+    hunterLevel: { type: Number, default: 0 },
+    claimBox: {
+      drg: { type: Number, default: -2 },
+      egg: { type: Number, default: -2 },
+      claim: { type: Boolean, default: false },
+      userCount: { type: Number, default: 0 }
     }
 
   },
