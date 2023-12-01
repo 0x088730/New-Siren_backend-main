@@ -54,7 +54,16 @@ import Available from "../models/availableModel.js";
 import { DateTime } from 'luxon'
 import Log from "../models/logModel.js";
 
-const globalValue = { value: 0, amount: 0, cardImg: {first: {}, second: {}, thire: {}} };
+const globalValue = {
+  value: 0,
+  amount: 0,
+  cardImg:
+  {
+    first: { name: '', url: '', reward: 0 },
+    second: { name: '', url: '', reward: 0 },
+    third: { name: '', url: '', reward: 0 },
+  }
+};
 
 export const login = asyncHandler(async (req, res) => {
   const { walletAddress } = req.body;
