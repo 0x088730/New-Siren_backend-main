@@ -357,6 +357,41 @@ export const claimHunter = asyncHandler(async (req, res) => {
 
   RESPONSE(res, 200, { data: false });
 })
+export const claimDragonTown = asyncHandler(async (req, res) => {
+  let { walletAddress } = req.body;
+  walletAddress = walletAddress.toLowerCase();
+
+  let available = await Available.findOne({ user: walletAddress })
+
+  if (!available) {
+    available = new Available({ user: walletAddress, dragonTownState: { state: false } });
+    await available.save()
+  }
+  else if (available.dragonTownState.state === true) {
+    const updatedAt = DateTime.fromJSDate(available.dragonTownState.updatedAt);
+    const now = DateTime.now();
+    const diffInSeconds = Math.floor(now.diff(updatedAt).as('seconds'));
+    const result = 30 - diffInSeconds
+    if (result <= 0) {      
+      let user = await User.findOne({ walletAddress })
+      console.log(dragonTownValue.eggArray);
+      for(let i=0; i<dragonTownValue.eggArray.length; i++) {
+        user.eggs = user.eggs + dragonTownValue.eggArray[i].egg;
+      }
+      await user.save()
+
+      available.dragonTownState.state = false
+      await available.save()
+      writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, meat: user.meat }, "Tower: Claim", "Drg:" + user.level * 100 + " Res:" + (user.level - 1) * 10 + " Earn")
+      RESPONSE(res, 200, { data: user.eggs });
+      return
+    }
+  }
+
+  writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, meat: 0 }, "Claim Drg", "Scam Action")
+
+  RESPONSE(res, 200, { data: false });
+})
 export const checkCoolDown = asyncHandler(async (req, res) => {
   let { walletAddress, type } = req.body;
   walletAddress = walletAddress.toLowerCase();
@@ -473,6 +508,22 @@ export const checkCoolDown = asyncHandler(async (req, res) => {
 
       RESPONSE(res, 200, { data: false });
     }
+  } else if (type === "dragon-town") {
+    let available = await Available.findOne({ user: walletAddress })
+    if (!available) {
+      available = new Available({ user: walletAddress });
+      await available.save()
+    }
+    if (available.dragonTownState.state === true) {
+      const updatedAt = DateTime.fromJSDate(available.dragonTownState.updatedAt);
+      const now = DateTime.now();
+      const diffInSeconds = Math.floor(now.diff(updatedAt).as('seconds'));
+      const result = 30 * dragonTownValue.times - diffInSeconds
+      RESPONSE(res, 200, { data: {time: result, eggArray: dragonTownValue.eggArray, price: dragonTownValue.price, count: dragonTownValue.times} });
+    }
+    else {
+      RESPONSE(res, 200, { data: false });
+    }
   }
 })
 
@@ -526,7 +577,7 @@ export const checkUpgradeAvailable = asyncHandler(async (req, res) => {
 })
 export const buyLevel = asyncHandler(async (req, res) => {
   let { walletAddress, dragon, meatAmount } = req.body;
-
+  if (meatAmount > 10) return
   writeBuyLevelLog(walletAddress, "Upgrade", "Request");
   walletAddress = walletAddress.toLowerCase();
 
@@ -3473,7 +3524,51 @@ export const startMineTownCooldown = asyncHandler(async (req, res) => {
     RESPONSE(res, 200, { data: user.eggs });
   }
   else {
+    RESPONSE(res, 200, { data: true });
+  }
+})
 
+const dragonTownValue = {
+  eggArray: [
+    { times: 0, egg: 0 },
+  ],
+  price: 0,
+  times: 0
+};
+export const startDragonTownCooldown = asyncHandler(async (req, res) => {
+  let { walletAddress, price, times } = req.body;
+  walletAddress = walletAddress.toLowerCase();
+  const user = await User.findOne({ walletAddress });
+  if (!user) {
+    writeLog(walletAddress, getIp(req), { Drg: 0, eggs: 0, meat: 0 }, "Hunting Lodge", "User does not exist");
+    RESPONSE(res, 400, {}, "User does not exist");
+    return;
+  }
+  let array = [];
+  let obj = { times: 0, egg: 0 }
+  for (let i = 0; i < times; i++) {
+    let rndValue = Math.floor(Math.random() * 100);
+    obj.times = i + 1;
+    if (rndValue < price) obj.egg = 1;
+    else obj.egg = 0;
+    array.push({ ...obj });
+  }
+  set(dragonTownValue, 'price', price);
+  set(dragonTownValue, 'times', times);
+  set(dragonTownValue, 'eggArray', array);
+  let available = await Available.findOne({ user: walletAddress })
+  if (!available) {
+    available = new Available({ user: walletAddress })
+    await available.save()
+  }
+  if (available.dragonTownState.state === false) {
+    available.dragonTownState.state = true;
+    available.save();
+    user.Drg = user.Drg - price * times;
+    user.save();
+    RESPONSE(res, 200, { data: {drg: user.Drg, eggArray: dragonTownValue.eggArray} });
+  }
+  else {
     RESPONSE(res, 200, { data: true });
   }
 })

@@ -54,6 +54,8 @@ import {
     changeResources,
     startMineTownCooldown,
     buyDragon,
+    startDragonTownCooldown,
+    claimDragonTown,
 } from '../controllers/userActions.js';
 import {  setRoomData } from "../controllers/roomActions.js";
 
@@ -69,10 +71,12 @@ router.post('/claim/drg', claimDrg);
 router.post('/convert/drg', convertDrg);
 router.post('/change/resources', changeResources);
 router.post('/claim/hunter', claimHunter);
+router.post('/claim/dragonTown', claimDragonTown);
 router.post('/levelup/hunter', hunterLevelUp);
 router.post('/check/upgradeavailable',checkUpgradeAvailable)
 router.post('/check/cooldown', checkCoolDown);
-router.post('/start/mineTown-cooldown',startMineTownCooldown)
+router.post('/start/mineTown-cooldown',startMineTownCooldown);
+router.post('/start/dragonTown-cooldown', startDragonTownCooldown);
 router.post('/set/cooldown', setCoolDown);
 
 router.post('/swap/meat', swapMeat);
