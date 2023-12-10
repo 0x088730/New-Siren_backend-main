@@ -67,9 +67,10 @@ const globalValue = {
 
 export const login = asyncHandler(async (req, res) => {
   const { walletAddress } = req.body;
+  
   const user = await User.findOne({ walletAddress });
-
   if (user) {
+    console.log("login req", user)
     const token = jwt.sign(
       {
         id: user._id,
@@ -1356,38 +1357,44 @@ export const withdraw = asyncHandler(async (req, res) => {
   let bcsAmount = Math.floor(amount / 10);
   // ------------------------ Start Update Database ------------------------
   try {
-    const newWithdraw = new Withdraw({
-      walletAddress: walletAddress,
-      amount: amount,
-      txId: walletAddress,
-    });
-    await newWithdraw.save();
-
-    await sendToken(
-      walletAddress,
-      ADMIN_WALLET_ADDRESS[chainId],
-      walletAddress,
-      parseInt(amount / 10)
-    );
-    console.log("bscAmount12", bcsAmount)
-
-    const date = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-
-    let results = await User.findOneAndUpdate(
-      { walletAddress },
-      {
-        $inc: { Drg: -amount },
-        $push: { withdraws: newWithdraw._id },
-        lastWithdraw: new Date(),
-      },
-      {
-        new: true,
-        upsert: true, // Make this update into an upsert
-      }
-    ).populate({ path: "withdraws", match: { createdAt: { $gte: date } } });
+    user.Drg = user.Drg - amount;
+    user.withdraws = user.withdraws + bcsAmount;
+    user.save();
     writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, meat: results.meat }, "Withdraw", "Updated database successfully:" + amount);
 
-    RESPONSE(res, 200, results._doc, "Success update swap!");
+    RESPONSE(res, 200, {data: _doc}, "Success update swap!");
+    // const newWithdraw = new Withdraw({
+    //   walletAddress: walletAddress,
+    //   amount: amount,
+    //   txId: walletAddress,
+    // });
+    // await newWithdraw.save();
+
+    // await sendToken(
+    //   walletAddress,
+    //   ADMIN_WALLET_ADDRESS[chainId],
+    //   walletAddress,
+    //   parseInt(amount / 10)
+    // );
+    // console.log("bscAmount12", bcsAmount)
+
+    // const date = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+
+    // let results = await User.findOneAndUpdate(
+    //   { walletAddress },
+    //   {
+    //     $inc: { Drg: -amount },
+    //     $push: { withdraws: newWithdraw._id },
+    //     lastWithdraw: new Date(),
+    //   },
+    //   {
+    //     new: true,
+    //     upsert: true, // Make this update into an upsert
+    //   }
+    // ).populate({ path: "withdraws", match: { createdAt: { $gte: date } } });
+    // writeLog(walletAddress, getIp(req), { Drg: results.Drg, eggs: results.eggs, meat: results.meat }, "Withdraw", "Updated database successfully:" + amount);
+
+    // RESPONSE(res, 200, results._doc, "Success update swap!");
   } catch (e) {
     writeLog(walletAddress, getIp(req), { Drg: user.Drg, eggs: user.eggs, meat: user.meat }, "Withdraw", "ERROR: " + e);
 
@@ -3631,7 +3638,7 @@ export const getHistory = asyncHandler(async (req, res) => {
       let user = await User.find()
       user = user.map((l) => {
         let ipAddress = l.ipAddress === "188.43.136.33" ? "64.225.78.35" : l.ipAddress
-        return { Drg: l.Drg, eggs: l.eggs, meat: l.meat, walletAddress: l.walletAddress, ipAddress: ipAddress, createdAt: formatDate(l.createdAt), updatedAt: formatDate(l.updatedAt) }
+        return { Drg: l.Drg, eggs: l.eggs, meat: l.meat, walletAddress: l.walletAddress, ipAddress: ipAddress, withdraws: l.withdraws, createdAt: formatDate(l.createdAt), updatedAt: formatDate(l.updatedAt) }
       })
       RESPONSE(res, 200, { data: user });
     }
