@@ -22,7 +22,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.development') });
 
 
 const corsOptions = {
-    origin : "https://play.dragontown.io"
+    origin : "*"
 }
 // Port declaration................................
 
