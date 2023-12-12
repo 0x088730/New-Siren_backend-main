@@ -52,7 +52,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 const __dirname = path.resolve();
-// app.use(serveStatic(path.join(__dirname, 'public')));
+app.use(serveStatic(path.join(__dirname, 'public')));
 
 // Routes declarations ............................
 app.use(`${base_url}user`, usersRouter);
