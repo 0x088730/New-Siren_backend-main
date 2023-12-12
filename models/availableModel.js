@@ -56,6 +56,14 @@ const availableSchema = new mongoose.Schema({
     }
 
   },
+  dragonTownState: {
+    state: {type: Boolean, default: false},
+
+    updatedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }
 
 });
 availableSchema.pre('save', function (next) {
@@ -77,6 +85,9 @@ availableSchema.pre('save', function (next) {
 
   if (this.isModified('hunterLevelupState.state')) {
     this.hunterLevelupState.updatedAt = new Date();
+  }
+  if (this.isModified('dragonTownState.state')) {
+    this.dragonTownState.updatedAt = new Date();
   }
   next();
 });

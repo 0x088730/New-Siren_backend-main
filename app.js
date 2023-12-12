@@ -1,5 +1,6 @@
 import express from "express";
 import http from "http";
+import https from 'https';
 import fs from "fs";
 import { Server } from "socket.io";
 import path from "path";
@@ -19,6 +20,10 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env.development') });
 
+
+const corsOptions = {
+    origin : "https://play.dragontown.io"
+}
 // Port declaration................................
 
 const PORT = process.env.PORT || 5000;
@@ -39,7 +44,7 @@ app.use('/admin', express.static('client/build/admin'));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 // Set up rate limiter
@@ -58,14 +63,20 @@ app.use(serveStatic(path.join(__dirname, 'public')));
 app.use(`${base_url}user`, usersRouter);
 app.use(`${base_url}pvp`, pvpRouter);
 
-const server = http.createServer(app);
+// const server = http.createServer(app);
 
-server.listen(PORT, () => {
-  console.log(`App is running on HTTP. Listening on port ${PORT}`);
-});
+const options = {
+    key: fs.readFileSync(path.resolve(__dirname, 'key.pem')),
+    cert: fs.readFileSync(path.resolve(__dirname, 'cert.pem'))
+}
+const httpsServer = https.createServer(options, app).listen(8553)
+
+// server.listen(PORT, () => {
+//   console.log(`App is running on HTTP. Listening on port ${PORT}`);
+// });
 
 // Socket server
-const io = new Server(server);
+const io = new Server(httpsServer);
 io.on("connection", function (socket) {
   socketConnectionManager(socket, io);
 });
