@@ -60,14 +60,12 @@ const userSchema = new mongoose.Schema(
 
     role: { type: Number, default: 0 },
 
-    withdraws: { type: Number, default: 0 },
-
-    // withdraws: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Withdraw",
-    //   },
-    // ],
+    withdraws: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Withdraw",
+      },
+    ],
     exp: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
     damage: { type: Number, default: 150 },
@@ -82,7 +80,7 @@ const userSchema = new mongoose.Schema(
         exp: { type: Number, default: 420 },
         damage: { type: Number, default: 150 },
         rarity: { type: Number, default: 0 },
-        level: { type: Number, default: 1 },
+        level: {type: Number, default: 1},
       },
     ],
     room: {

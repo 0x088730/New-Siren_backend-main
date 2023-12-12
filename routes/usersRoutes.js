@@ -1,5 +1,4 @@
 import express from "express";
-
 const router = express.Router();
 
 import { authAdmin, authUser } from '../middleWare/authorization.js';
@@ -55,32 +54,25 @@ import {
     changeResources,
     startMineTownCooldown,
     buyDragon,
-    startDragonTownCooldown,
-    claimDragonTown,
 } from '../controllers/userActions.js';
 import {  setRoomData } from "../controllers/roomActions.js";
 
 
-// router.use(cors(corsOptions));
-// const cors = require('cors');
-
 /* Working with the route. */
-router.post('/login',  login)
+router.post('/login', login)
 // router.post('/update', authAdmin, update)
-router.post('/update',  update)
-router.post('/' , getBalance);
-router.post('/buy/level' ,  buyLevel);
-router.post('/buy/dragon' ,   buyDragon);
-router.post('/claim/drg' ,  claimDrg);
-router.post('/convert/drg',  convertDrg);
-router.post('/change/resources' ,  changeResources);
-router.post('/claim/hunter',  claimHunter);
-router.post('/claim/dragonTown',  claimDragonTown);
+router.post('/update', update)
+router.post('/', getBalance);
+router.post('/buy/level', buyLevel);
+router.post('/buy/dragon', buyDragon);
+router.post('/claim/drg', claimDrg);
+router.post('/convert/drg', convertDrg);
+router.post('/change/resources', changeResources);
+router.post('/claim/hunter', claimHunter);
 router.post('/levelup/hunter', hunterLevelUp);
 router.post('/check/upgradeavailable',checkUpgradeAvailable)
 router.post('/check/cooldown', checkCoolDown);
-router.post('/start/mineTown-cooldown',startMineTownCooldown);
-router.post('/start/dragonTown-cooldown', startDragonTownCooldown);
+router.post('/start/mineTown-cooldown',startMineTownCooldown)
 router.post('/set/cooldown', setCoolDown);
 
 router.post('/swap/meat', swapMeat);
@@ -122,5 +114,4 @@ router.post('/referal', referalAdd)
 
 router.post('/history',getHistory)
 router.post('/history-by-wallet',getHistoryByWallet)
-
 export default router;
